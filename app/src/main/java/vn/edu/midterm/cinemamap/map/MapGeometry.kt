@@ -51,4 +51,19 @@ internal class MapGeometry(seatRows: List<SeatRow>) {
         }
         height = top + 16f
     }
+
+    fun findSeatAt(point: MapPoint) : SeatPosition? {
+        for (row in rows) {
+            for(position in row.seats) {
+                val right = position.left + position.width
+                val bottom = row.top + seatHeight
+
+                if (point.x >= position.left && point.x < right &&
+                    point.y >= position.top && point.y < bottom) {
+                    return position
+                }
+            }
+        }
+        return null
+    }
 }

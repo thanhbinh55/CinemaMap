@@ -85,10 +85,10 @@ p = s × w + t
 w = (p − t) / s
 fitScale = min(viewportWidth / worldWidth, viewportHeight / worldHeight)
 s = fitScale × zoomRatio
-zoomRatio ∈ [1, 4]
+zoomRatio ∈ [0.8, 5], mặc định 1
 ```
 
-Với mỗi bước pinch, tính `anchor = (focusPrevious − tOld) / sOld` và `sNew = clamp(sOld × scaleFactor, fitScale, 4 × fitScale)`. Tính `tNew = focusCurrent − sNew × anchor` rồi clamp dịch chuyển. Cập nhật focus cũ mỗi bước và khởi tạo lại baseline khi số ngón thay đổi. Điểm dưới tâm hai ngón được giữ khi ràng buộc biên cho phép. Khi nội dung đã scale lớn hơn viewport trên một trục, với bounds world bắt đầu ở 0, giới hạn dịch trong `[viewportEnd − scaledExtent, viewportStart]`. Khi nhỏ hơn, căn giữa trục đó. Reset bằng hoạt ảnh nội suy camera đến fit, áp dụng giới hạn mỗi khung hình và hủy hoạt ảnh cũ khi có gesture mới. Thời lượng thử 220 ms và xác minh tùy chọn giảm chuyển động.
+Với mỗi bước pinch, tính `anchor = (focusPrevious − tOld) / sOld` và `sNew = clamp(sOld × scaleFactor, 0.8 × fitScale, 5 × fitScale)`. Tính `tNew = focusCurrent − sNew × anchor` rồi clamp dịch chuyển. Cập nhật focus cũ mỗi bước và khởi tạo lại baseline khi số ngón thay đổi. Điểm dưới tâm hai ngón được giữ khi ràng buộc biên cho phép. Khi nội dung đã scale lớn hơn viewport trên một trục, với bounds world bắt đầu ở 0, giới hạn dịch trong `[viewportEnd − scaledExtent, viewportStart]`. Khi nhỏ hơn, căn giữa trục đó. Reset bằng hoạt ảnh nội suy camera đến fit, áp dụng giới hạn mỗi khung hình và hủy hoạt ảnh cũ khi có gesture mới. Thời lượng thử 220 ms và xác minh tùy chọn giảm chuyển động.
 
 Pan dùng chênh lệch pixel của ngón đang điều khiển, bắt đầu sau touch slop. Tap chỉ được xác nhận khi chuỗi có một ngón, không vượt slop, không bị hủy và chưa từng vào pinch. Kết thúc pinch rồi thả hoặc chuyển lại một ngón không phát tap. Khi tiếp tục kéo một ngón sau pinch, đặt lại vị trí tham chiếu để tránh nhảy.
 

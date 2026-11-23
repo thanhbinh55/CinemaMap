@@ -1,6 +1,6 @@
 # Đối chiếu đề thi và phương án rạp phim
 
-Nguồn là đề thi PDF 5 trang. Các số mục bên dưới trỏ tới đề gốc. Mã R dùng để liên kết đặc tả, kiểm thử và minh chứng. Mọi dòng đang chờ kiểm chứng trên ứng dụng.
+Nguồn là đề thi PDF 5 trang. Các số mục bên dưới trỏ tới đề gốc. Mã R dùng để liên kết đặc tả, kiểm thử và minh chứng. Tiến độ kiểm chứng được ghi trong tài liệu nghiệm thu.
 
 ## Phạm vi và cách hiểu các ngưỡng
 
@@ -16,7 +16,7 @@ Nguồn là đề thi PDF 5 trang. Các số mục bên dưới trỏ tới đ�
 | R01 | 1, 2.1, 6, 8 · tr. 1, 4–5 | Phòng chiếu có hình học rõ, đối tượng theo khu, có nhãn, đọc tổng thể ở zoom mặc định | A–L chia Thường/VIP/Đôi, màn chiếu ở đầu phòng, hai khối trái/phải, lối đi giữa và khoảng cách giữa các khu. Mở app thấy toàn phòng và đủ 196 ghế ở cả hai hướng. |
 | R02 | 2.1 · tr. 1–2 | Ít nhất ba trạng thái trực quan, phản hồi rõ khi chọn, bỏ chọn trả đúng trạng thái trước | Bốn trạng thái Trống, Đang chọn, Đã đặt, Không khả dụng. Chọn ghế trống cho dấu ✓ và viền. Bỏ chọn trả về Trống, các ghế khác giữ nguyên. Loại ghế và trạng thái có mã hóa riêng. |
 | R03 | 2.1 · tr. 1 | Pan một ngón theo các hướng và giới hạn phạm vi | Kéo theo hai trục, chặn ở biên, không đẩy toàn bộ bản đồ ra khỏi viewport. Trục có nội dung nhỏ hơn viewport được căn giữa. |
-| R04 | 2.1 · tr. 1 | Pinch liên tục quanh tâm hai ngón, giới hạn min/max | Dùng focus hai ngón và phép đổi tọa độ, tỷ lệ tương đối từ 1× đến 4× fit. Giữ điểm neo khi biên cho phép. |
+| R04 | 2.1 · tr. 1 | Pinch liên tục quanh tâm hai ngón, giới hạn min/max | Dùng focus hai ngón và phép đổi tọa độ, tỷ lệ tương đối từ 0,8× đến 5× mức vừa phòng, mặc định 1×. Giữ điểm neo khi biên cho phép. |
 | R05 | 2.1, 3.2, 7 · tr. 1–2, 4 | Tap chính xác để chọn/bỏ chọn/xem thông tin, kể cả sát biên sau pan/zoom | Đảo phép biến đổi dùng khi vẽ, hit vùng ghế tại tọa độ world. Chạm mép trong chọn đúng ghế, mép ngoài và lối đi bỏ qua. Ghế đã đặt/không khả dụng cho xem chi tiết, không thêm vào danh sách. |
 | R06 | 2.2 · tr. 2 | Legend đầy đủ, dễ mở, ít che sơ đồ | Dải gọn ngay cạnh toolbar/sơ đồ và mục Chú thích xem đủ loại, trạng thái, nhãn khu và ý nghĩa lối đi, ghế đôi, lọc mờ. |
 | R07 | 2.2 · tr. 2 | Lọc hoặc tìm kiếm, có điều kiện đang dùng, xóa được, có trạng thái rỗng, lựa chọn nhất quán | Lọc theo loại và trạng thái với nhãn đang áp dụng và đếm kết quả. Ghế lệch điều kiện làm mờ, có thông báo khi 0 kết quả và thao tác xóa lọc. Lựa chọn đang có giữ trong sheet và ghi rõ khi nằm ngoài lọc. |

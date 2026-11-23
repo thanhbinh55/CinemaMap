@@ -1,6 +1,6 @@
 # Sơ đồ phòng chiếu rạp phim
 
-**Trạng thái: đã thiết lập dự án Android và Canvas tổng quan.** Sinh viên xác định công việc tiếp theo và cách Agent hỗ trợ. Duyệt kế hoạch xác nhận hướng làm chung. Mỗi yêu cầu cụ thể xác định phần việc Agent được làm trong workspace.
+**Trạng thái: đã có Canvas tổng quan, pinch, pan và hit-testing ở mức ghi Logcat.** Sinh viên xác định công việc tiếp theo và cách Agent hỗ trợ. Duyệt kế hoạch xác nhận hướng làm chung. Mỗi yêu cầu cụ thể xác định phần việc Agent được làm trong workspace.
 
 Đồ án cá nhân trong một tuần cho học phần Phát triển phần mềm cho thiết bị di động. Đề tài số 2 là sơ đồ phòng chiếu rạp phim. Phương án đề xuất dùng dữ liệu giả lập, Android Kotlin và một Custom View vẽ toàn bộ sơ đồ bằng Canvas.
 
@@ -30,7 +30,7 @@ Dự án được tạo với Kotlin/Views, Gradle Wrapper 9.6.0, AGP 9.4.1, Gra
 - Lọc theo loại và trạng thái. Ghế ngoài bộ lọc được làm mờ và khóa thao tác trên sơ đồ. Các ghế đã chọn tiếp tục xuất hiện trong Bottom Sheet và người dùng có thể định vị hoặc xóa từng mục.
 - Hai hướng màn hình dùng cùng một sơ đồ. Reset View đưa camera về góc nhìn toàn phòng, giữ lựa chọn và điều kiện lọc.
 - Tone **Kem – Chàm** được đề xuất. Hai tone thay thế và các cải tiến nằm trong tài liệu UI/UX.
-- Tiến độ nghiệm thu được ghi bằng kết quả build, test và demo thực tế. Bản hiện tại có Canvas tĩnh và dữ liệu độc lập. Kiểm thử tương tác và minh chứng UI trên máy ảo đang chờ.
+- Tiến độ nghiệm thu được ghi bằng kết quả build, test và demo thực tế. Phần đã kiểm tra và việc còn lại được ghi trong [checklist](docs/05-nghiem-thu.md#checklist-còn-lại).
 
 ## Cách học và làm từng phần
 
@@ -46,6 +46,7 @@ Chia commit theo phần thay đổi có ý nghĩa và nhịp làm thực tế. T
 | 2026-11-23 | Codex cập nhật kế hoạch theo quy trình học do sinh viên mô tả | README và các mục lộ trình, Git, thiết lập, quy chuẩn phối hợp và prompt làm từng phần | Sinh viên đã phản hồi về lịch commit và phạm vi tự động hóa. Bản cập nhật ghi lại quy trình làm từng phần. Việc xác nhận nội dung cập nhật đang chờ. |
 | 2026-11-23 | Codex cập nhật hướng dẫn theo lựa chọn tiếp tục dùng Codex | README và `docs/06-prompt-codex.md` | Hướng dẫn giao từng việc trong chat hiện tại và khởi động lại ngữ cảnh khi mở chat mới. |
 | 2026-11-23 | Codex thiết lập nền dự án và nối dữ liệu phòng thật vào Canvas | Git local, cấu hình bỏ qua tệp máy, mô hình ghế, dữ liệu giả lập, hình học và Canvas tổng quan | Gradle build và unit test của dự án chạy thành công. Kiểm tra riêng trên các lớp đã biên dịch xác nhận 196 ghế, 212 chỗ, mã duy nhất và lối đi giữa. Kiểm chứng UI trên Pixel_7 ở hai hướng đang chờ. Camera tương tác và chọn ghế sẽ triển khai ở phần kế tiếp. |
+| 2026-11-24 | Codex nới giới hạn zoom và sửa chuyển từ pinch sang kéo bằng ngón còn lại | Camera trong `CinemaMapView.kt` và giới hạn zoom trong tài liệu | Build và unit test thành công. Phép thử tạm gửi sự kiện vào View trên Pixel_7 xác nhận kéo trái/phải sau zoom và kéo tiếp sau khi nhấc một ngón. Sinh viên kiểm tra lại bằng thao tác trực tiếp. |
 
 Khi triển khai, bổ sung hướng dẫn chạy theo môi trường đã kiểm chứng, kiến trúc mã nguồn thực tế, tổ chức dữ liệu, công thức đổi tọa độ, hit-testing, quản lý trạng thái, tối ưu hiệu năng và liên kết video. Cập nhật nhật ký sau mỗi phiên sử dụng AI theo [quy chuẩn ghi chép](docs/04-quy-chuan.md).
 

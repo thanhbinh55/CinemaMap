@@ -10,6 +10,11 @@ import vn.edu.midterm.cinemamap.R
 import vn.edu.midterm.cinemamap.data.MockCinemaData
 import vn.edu.midterm.cinemamap.model.SeatAvailability
 import vn.edu.midterm.cinemamap.model.SeatType
+import android.util.Log
+import android.view.GestureDetector
+import android.view.MotionEvent
+import android.view.ScaleGestureDetector
+
 
 class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
@@ -35,25 +40,154 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         SeatType.COUPLE to resources.getString(R.string.seat_couple)
     )
 
+    private var camera: CameraTransform? = null
     private var fitScale = 0f
-    private var offsetX = 0f
-    private var offsetY = 0f
+    private var previousFocusX = 0f
+    private var previousFocusY = 0f
+    private var hadMultiplePointers = false
+    private var remainingPointerId: Int? = null
+    private var remainingPointerX = 0f
+    private var remainingPointerY = 0f
+    private val tapDetector = GestureDetector(
+        context,
+        object : GestureDetector.SimpleOnGestureListener() {
+            override fun onDown(event: MotionEvent): Boolean = true
+
+            override fun onScroll(
+                firstEvent: MotionEvent?,
+                currentEvent: MotionEvent,
+                distanceX: Float,
+                distanceY: Float
+            ): Boolean {
+                if (hadMultiplePointers) return false
+                return panBy(-distanceX, -distanceY)
+            }
+
+            override fun onSingleTapUp(event: MotionEvent): Boolean {
+                if (hadMultiplePointers) return false
+                val transform = camera ?: return false
+                val point = transform.viewToWorld(event.x, event.y)
+                val hit = geometry.findSeatAt(point)
+
+                Log.d("CinemaMap", hit?.seat?.id ?: "Không trúng ghế")
+                performClick()
+                return true
+            }
+        }
+    )
+
+    private val scaleDetector = ScaleGestureDetector(
+        context,
+        object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
+                previousFocusX = detector.focusX
+                previousFocusY = detector.focusY
+                return camera != null
+            }
+
+            override fun onScale(detector: ScaleGestureDetector): Boolean {
+                val current = camera ?: return false
+                val anchor = current.viewToWorld(previousFocusX, previousFocusY)
+
+                val newScale = (current.scale * detector.scaleFactor)
+                    .coerceIn(fitScale * 0.8f, fitScale * 5f)
+
+                val newOffsetX = detector.focusX - anchor.x * newScale
+                val newOffsetY = detector.focusY - anchor.y * newScale
+
+                camera = CameraTransform(
+                    newScale,
+                    limitOffset(newOffsetX, width.toFloat(), geometry.width * newScale),
+                    limitOffset(newOffsetY, height.toFloat(), geometry.height * newScale)
+                )
+
+                previousFocusX = detector.focusX
+                previousFocusY = detector.focusY
+                invalidate()
+                return true
+            }
+        }
+    ).apply {
+        isQuickScaleEnabled = false
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                hadMultiplePointers = false
+                remainingPointerId = null
+            }
+            MotionEvent.ACTION_POINTER_DOWN -> {
+                hadMultiplePointers = true
+                remainingPointerId = null
+            }
+            MotionEvent.ACTION_POINTER_UP -> {
+                if (event.pointerCount == 2) {
+                    val remainingIndex = 1 - event.actionIndex
+                    remainingPointerId = event.getPointerId(remainingIndex)
+                    remainingPointerX = event.getX(remainingIndex)
+                    remainingPointerY = event.getY(remainingIndex)
+                }
+            }
+            MotionEvent.ACTION_MOVE -> {
+                if (event.pointerCount == 1 && event.getPointerId(0) == remainingPointerId) {
+                    val x = event.x
+                    val y = event.y
+                    panBy(x - remainingPointerX, y - remainingPointerY)
+                    remainingPointerX = x
+                    remainingPointerY = y
+                }
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> remainingPointerId = null
+        }
+
+        scaleDetector.onTouchEvent(event)
+        val handledTap = tapDetector.onTouchEvent(event)
+        return handledTap || hadMultiplePointers || super.onTouchEvent(event)
+    }
+
+    override fun performClick(): Boolean {
+        super.performClick()
+        return true
+    }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        fitScale = minOf(w / geometry.width, h / geometry.height)
-        offsetX = (w - geometry.width * fitScale) / 2f
-        offsetY = (h - geometry.height * fitScale) / 2f
+        val scale = minOf(w / geometry.width, h / geometry.height)
+        fitScale = scale
+        val offsetX = (w - geometry.width * scale) / 2f
+        val offsetY = (h - geometry.height * scale) / 2f
+
+        camera = if (scale > 0f) CameraTransform(scale, offsetX, offsetY) else null
+    }
+
+    private fun panBy(deltaX: Float, deltaY: Float): Boolean {
+        val current = camera ?: return false
+        val offsetX = limitOffset(current.offsetX + deltaX, width.toFloat(), geometry.width * current.scale)
+        val offsetY = limitOffset(current.offsetY + deltaY, height.toFloat(), geometry.height * current.scale)
+        if (offsetX != current.offsetX || offsetY != current.offsetY) {
+            camera = current.copy(offsetX = offsetX, offsetY = offsetY)
+            invalidate()
+        }
+        return true
+    }
+
+    private fun limitOffset(offset: Float, viewportSize: Float, mapSize: Float): Float {
+        return if (mapSize <= viewportSize) {
+            (viewportSize - mapSize) / 2f
+        } else {
+            offset.coerceIn(viewportSize - mapSize, 0f)
+        }
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.drawColor(background)
-        if (fitScale <= 0f) return
+        val transform = camera ?: return
 
         val checkpoint = canvas.save()
-        canvas.translate(offsetX, offsetY)
-        canvas.scale(fitScale, fitScale)
+        canvas.translate(transform.offsetX, transform.offsetY)
+        canvas.scale(transform.scale, transform.scale)
         drawScreen(canvas)
 
         var previousType: SeatType? = null
