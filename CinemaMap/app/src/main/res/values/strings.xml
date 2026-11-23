@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">CinemaMap</string>
+    <string name="screen_label">MÀN CHIẾU</string>
+    <string name="seat_standard">Thường</string>
+    <string name="seat_vip">VIP</string>
+    <string name="seat_couple">Ghế đôi</string>
+</resources>
