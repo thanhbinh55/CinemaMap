@@ -2,7 +2,7 @@
 
 ## Vị trí dự án đang dùng
 
-Android Studio mở thư mục `CinemaMap/`. Git ở thư mục gốc của workspace để theo dõi cả app và tài liệu. Dự án template hiện dùng Wrapper 9.6.0, AGP 9.4.1, Gradle JDK 25 và API 37 làm compile/target. Canvas tổng quan đã nối với `MockCinemaData` và `MapGeometry`. Cấu trúc bên dưới mô tả đích triển khai bên trong `CinemaMap/` đối với các tệp Android.
+Mở thư mục `CinemaMap/` trong Android Studio. Đây là gốc repo Git, chứa README, mã Android và thư mục tài liệu. Dự án template hiện dùng Wrapper 9.6.0, AGP 9.4.1, Gradle JDK 25 và API 37 làm compile/target. Canvas tổng quan đã nối với `MockCinemaData` và `MapGeometry`. Cấu trúc bên dưới mô tả đích triển khai bên trong `CinemaMap/` đối với các tệp Android.
 
 ## Thiết lập khi sinh viên yêu cầu
 
@@ -11,7 +11,7 @@ Nhóm bước dưới đây dùng để xác định việc cần làm. Khi sinh
 1. Tạo dự án Android Studio loại Empty Views Activity, Kotlin DSL, một module `app`, package dự kiến `vn.edu.midterm.cinemamap`, Min SDK 26. Dùng AndroidX, ViewBinding, Lifecycle ViewModel/StateFlow, Material Components và RecyclerView cho danh sách trong Sheet.
 2. Máy hiện có Android Studio, SDK platform 35/36 và ADB tại `~/Library/Android/sdk/platform-tools/adb`. JBR quan sát được là Java 25. Khi khởi tạo, xác minh ma trận tương thích AGP–Gradle–JDK–Kotlin, chọn bộ phiên bản ổn định, khóa bằng Wrapper và version catalog. Chọn JDK tương thích trong Android Studio nếu JBR mặc định lệch. Chốt `compileSdk`/`targetSdk` theo toolchain và kiểm tra system insets. Sự hiện diện SDK chưa chứng minh emulator hoặc Gradle chạy được.
 3. Mở dự án trong Android Studio, đồng bộ Gradle, chọn emulator ARM64 hoặc thiết bị Android thật. Kiểm tra ADB nhận thiết bị, build, cài và khởi chạy ở cả hai hướng. Xác minh thêm bản clone sạch trước khi nộp.
-4. Tạo Git tại thư mục này khi việc đó được yêu cầu. Theo dõi Gradle Wrapper gồm JAR, build scripts, mã nguồn, resources, test và tài liệu. Bỏ qua cấu hình SDK theo máy, build output, cache, thông tin ký và cấu hình IDE cá nhân. Lệnh kiểm tra dự kiến ở thư mục gốc là `./gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug` và khi có thiết bị, `./gradlew :app:connectedDebugAndroidTest`.
+4. Chạy lệnh Git từ gốc repo `CinemaMap/`. Theo dõi Gradle Wrapper gồm JAR, build scripts, mã nguồn, resources, test và tài liệu. Bỏ qua cấu hình SDK theo máy, build output, cache, thông tin ký và cấu hình IDE cá nhân. Lệnh kiểm tra từ thư mục `CinemaMap/` là `./gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug` và khi có thiết bị, `./gradlew :app:connectedDebugAndroidTest`.
 
 ## Cấu trúc mã dự kiến
 

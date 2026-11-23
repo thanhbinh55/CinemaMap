@@ -6,11 +6,11 @@
 
 ## Chạy phiên bản hiện tại
 
-1. Mở thư mục `CinemaMap/` trong Android Studio và đợi Gradle Sync.
+1. Mở thư mục chứa README này (`CinemaMap/`) trong Android Studio và đợi Gradle Sync.
 2. Chọn máy ảo `Pixel_7`, rồi Run cấu hình `app`.
 3. Khi mở app, kiểm tra màn chiếu, lối đi ở giữa và ba khu ghế. Xoay dọc/ngang để kiểm tra sơ đồ vẫn nằm trong vùng nhìn.
 
-Dự án được tạo với Kotlin/Views, Gradle Wrapper 9.6.0, AGP 9.4.1, Gradle JDK 25, compile/target SDK 37 và min SDK 26. Kiểm tra dòng lệnh từ thư mục `CinemaMap/` bằng `./gradlew --offline :app:assembleDebug :app:testDebugUnitTest` khi đã có cache. Git được khởi tạo tại thư mục gốc để theo dõi cả app và tài liệu.
+Dự án được tạo với Kotlin/Views, Gradle Wrapper 9.6.0, AGP 9.4.1, Gradle JDK 25, compile/target SDK 37 và min SDK 26. Kiểm tra dòng lệnh từ thư mục `CinemaMap/` bằng `./gradlew --offline :app:assembleDebug :app:testDebugUnitTest` khi đã có cache. `CinemaMap/` là gốc dự án Android và repo Git.
 
 ## Bộ kế hoạch
 
