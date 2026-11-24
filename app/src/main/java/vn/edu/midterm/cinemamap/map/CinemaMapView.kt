@@ -41,6 +41,15 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         SeatType.COUPLE to resources.getString(R.string.seat_couple)
     )
 
+    var onSeatClickListener: ((vn.edu.midterm.cinemamap.model.Seat) -> Unit)? = null
+
+    var selectedSeatIds: Set<String> = emptySet()
+        set(value) {
+            if (field != value) {
+                field = value
+                invalidate()
+            }
+        }
     private var camera: CameraTransform? = null
     private var fitCamera: CameraTransform? = null
     private var resetAnimator: ValueAnimator? = null
@@ -72,6 +81,9 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
                 val hit = geometry.findSeatAt(point)
 
                 Log.d("CinemaMap", hit?.seat?.id ?: "Không trúng ghế")
+                if (hit != null) {
+                    onSeatClickListener?.invoke(hit.seat)
+                }
                 performClick()
                 return true
             }
@@ -268,7 +280,9 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         val middleX = (left + right) / 2f
         val middleY = (top + bottom) / 2f
         val seat = position.seat
+        val isSelected = seat.id in selectedSeatIds
 
+        // 1. Vẽ nền ghế
         paint.style = Paint.Style.FILL
         paint.color = if (seat.availability == SeatAvailability.AVAILABLE) {
             when (seat.type) {
@@ -281,17 +295,40 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         }
         canvas.drawRect(left, top, right, bottom, paint)
 
+        // 2. Vẽ viền và dấu trạng thái ĐANG CHỌN (nếu được chọn)
         paint.style = Paint.Style.STROKE
-        paint.color = outlineColor
-        canvas.drawRect(left + 1f, top + 1f, right - 1f, bottom - 1f, paint)
-        if (seat.type == SeatType.COUPLE) {
+        if (isSelected) {
+            paint.strokeWidth = 3f
+            paint.color = screenColor // Màu chàm nổi bật
+            canvas.drawRect(left + 1f, top + 1f, right - 1f, bottom - 1f, paint)
+
+            // Vẽ dấu tick ✓
+            paint.strokeWidth = 2.5f
+            canvas.drawLine(middleX - 5f, middleY, middleX - 1f, middleY + 5f, paint)
+            canvas.drawLine(middleX - 1f, middleY + 5f, middleX + 6f, middleY - 5f, paint)
+        } else {
+            paint.strokeWidth = 2f
+            paint.color = outlineColor
+            canvas.drawRect(left + 1f, top + 1f, right - 1f, bottom - 1f, paint)
+        }
+
+        // 3. Vạch chia giữa cho ghế đôi
+        if (seat.type == SeatType.COUPLE && !isSelected) {
+            paint.strokeWidth = 2f
+            paint.color = outlineColor
             canvas.drawLine(middleX, top + 2f, middleX, bottom - 2f, paint)
         }
+
+        // 4. Ký hiệu ghế đã đặt hoặc hỏng
         when (seat.availability) {
-            SeatAvailability.BOOKED -> canvas.drawLine(
-                middleX - 7f, middleY, middleX + 7f, middleY, paint
-            )
+            SeatAvailability.BOOKED -> {
+                paint.strokeWidth = 2f
+                paint.color = outlineColor
+                canvas.drawLine(middleX - 7f, middleY, middleX + 7f, middleY, paint)
+            }
             SeatAvailability.UNAVAILABLE -> {
+                paint.strokeWidth = 2f
+                paint.color = outlineColor
                 canvas.drawLine(middleX - 5f, middleY - 5f, middleX + 5f, middleY + 5f, paint)
                 canvas.drawLine(middleX - 5f, middleY + 5f, middleX + 5f, middleY - 5f, paint)
             }
