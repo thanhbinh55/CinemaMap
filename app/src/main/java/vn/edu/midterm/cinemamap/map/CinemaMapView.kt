@@ -1,20 +1,21 @@
 package vn.edu.midterm.cinemamap.map
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
-import android.view.View
-import vn.edu.midterm.cinemamap.R
-import vn.edu.midterm.cinemamap.data.MockCinemaData
-import vn.edu.midterm.cinemamap.model.SeatAvailability
-import vn.edu.midterm.cinemamap.model.SeatType
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
-
+import android.view.View
+import androidx.core.animation.doOnEnd
+import vn.edu.midterm.cinemamap.R
+import vn.edu.midterm.cinemamap.data.MockCinemaData
+import vn.edu.midterm.cinemamap.model.SeatAvailability
+import vn.edu.midterm.cinemamap.model.SeatType
 
 class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
@@ -41,7 +42,8 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
     )
 
     private var camera: CameraTransform? = null
-    private var fitScale = 0f
+    private var fitCamera: CameraTransform? = null
+    private var resetAnimator: ValueAnimator? = null
     private var previousFocusX = 0f
     private var previousFocusY = 0f
     private var hadMultiplePointers = false
@@ -87,6 +89,7 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
 
             override fun onScale(detector: ScaleGestureDetector): Boolean {
                 val current = camera ?: return false
+                val fitScale = fitCamera?.scale ?: return false
                 val anchor = current.viewToWorld(previousFocusX, previousFocusY)
 
                 val newScale = (current.scale * detector.scaleFactor)
@@ -95,11 +98,7 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
                 val newOffsetX = detector.focusX - anchor.x * newScale
                 val newOffsetY = detector.focusY - anchor.y * newScale
 
-                camera = CameraTransform(
-                    newScale,
-                    limitOffset(newOffsetX, width.toFloat(), geometry.width * newScale),
-                    limitOffset(newOffsetY, height.toFloat(), geometry.height * newScale)
-                )
+                camera = boundedCamera(newScale, newOffsetX, newOffsetY)
 
                 previousFocusX = detector.focusX
                 previousFocusY = detector.focusY
@@ -114,6 +113,7 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
+                resetAnimator?.cancel()
                 hadMultiplePointers = false
                 remainingPointerId = null
             }
@@ -153,23 +153,69 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
+        resetAnimator?.cancel()
         val scale = minOf(w / geometry.width, h / geometry.height)
-        fitScale = scale
         val offsetX = (w - geometry.width * scale) / 2f
         val offsetY = (h - geometry.height * scale) / 2f
 
-        camera = if (scale > 0f) CameraTransform(scale, offsetX, offsetY) else null
+        fitCamera = if (scale > 0f) CameraTransform(scale, offsetX, offsetY) else null
+        camera = fitCamera
+    }
+
+    override fun onDetachedFromWindow() {
+        resetAnimator?.cancel()
+        super.onDetachedFromWindow()
+    }
+
+    fun resetView() {
+        val current = camera ?: return
+        val target = fitCamera ?: return
+        resetAnimator?.cancel()
+        if (current == target) return
+
+        if (!ValueAnimator.areAnimatorsEnabled()) {
+            camera = target
+            invalidate()
+            return
+        }
+
+        val animator = ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = 220L
+            addUpdateListener { animation ->
+                val progress = animation.animatedFraction
+                camera = if (progress == 1f) {
+                    target
+                } else {
+                    boundedCamera(
+                        current.scale + (target.scale - current.scale) * progress,
+                        current.offsetX + (target.offsetX - current.offsetX) * progress,
+                        current.offsetY + (target.offsetY - current.offsetY) * progress
+                    )
+                }
+                invalidate()
+            }
+            doOnEnd { resetAnimator = null }
+        }
+        resetAnimator = animator
+        animator.start()
     }
 
     private fun panBy(deltaX: Float, deltaY: Float): Boolean {
         val current = camera ?: return false
-        val offsetX = limitOffset(current.offsetX + deltaX, width.toFloat(), geometry.width * current.scale)
-        val offsetY = limitOffset(current.offsetY + deltaY, height.toFloat(), geometry.height * current.scale)
-        if (offsetX != current.offsetX || offsetY != current.offsetY) {
-            camera = current.copy(offsetX = offsetX, offsetY = offsetY)
+        val next = boundedCamera(current.scale, current.offsetX + deltaX, current.offsetY + deltaY)
+        if (next != current) {
+            camera = next
             invalidate()
         }
         return true
+    }
+
+    private fun boundedCamera(scale: Float, offsetX: Float, offsetY: Float): CameraTransform {
+        return CameraTransform(
+            scale,
+            limitOffset(offsetX, width.toFloat(), geometry.width * scale),
+            limitOffset(offsetY, height.toFloat(), geometry.height * scale)
+        )
     }
 
     private fun limitOffset(offset: Float, viewportSize: Float, mapSize: Float): Float {

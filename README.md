@@ -1,6 +1,6 @@
 # Sơ đồ phòng chiếu rạp phim
 
-**Trạng thái: đã có Canvas tổng quan, pinch, pan và hit-testing ở mức ghi Logcat.** Sinh viên xác định công việc tiếp theo và cách Agent hỗ trợ. Duyệt kế hoạch xác nhận hướng làm chung. Mỗi yêu cầu cụ thể xác định phần việc Agent được làm trong workspace.
+**Trạng thái: đã có Canvas tổng quan, pinch, pan, nút Toàn phòng và hit-testing ở mức ghi Logcat.** Sinh viên xác định công việc tiếp theo và cách Agent hỗ trợ. Duyệt kế hoạch xác nhận hướng làm chung. Mỗi yêu cầu cụ thể xác định phần việc Agent được làm trong workspace.
 
 Đồ án cá nhân trong một tuần cho học phần Phát triển phần mềm cho thiết bị di động. Đề tài số 2 là sơ đồ phòng chiếu rạp phim. Phương án đề xuất dùng dữ liệu giả lập, Android Kotlin và một Custom View vẽ toàn bộ sơ đồ bằng Canvas.
 
@@ -8,7 +8,7 @@
 
 1. Mở thư mục chứa README này (`CinemaMap/`) trong Android Studio và đợi Gradle Sync.
 2. Chọn máy ảo `Pixel_7`, rồi Run cấu hình `app`.
-3. Khi mở app, kiểm tra màn chiếu, lối đi ở giữa và ba khu ghế. Xoay dọc/ngang để kiểm tra sơ đồ vẫn nằm trong vùng nhìn.
+3. Khi mở app, kiểm tra màn chiếu, lối đi ở giữa và ba khu ghế. Thử pinch, kéo và bấm Toàn phòng để về góc mặc định. Xoay dọc/ngang để kiểm tra bố cục.
 
 Dự án được tạo với Kotlin/Views, Gradle Wrapper 9.6.0, AGP 9.4.1, Gradle JDK 25, compile/target SDK 37 và min SDK 26. Kiểm tra dòng lệnh từ thư mục `CinemaMap/` bằng `./gradlew --offline :app:assembleDebug :app:testDebugUnitTest` khi đã có cache. `CinemaMap/` là gốc dự án Android và repo Git.
 
@@ -47,6 +47,7 @@ Chia commit theo phần thay đổi có ý nghĩa và nhịp làm thực tế. T
 | 2026-11-23 | Codex cập nhật hướng dẫn theo lựa chọn tiếp tục dùng Codex | README và `docs/06-prompt-codex.md` | Hướng dẫn giao từng việc trong chat hiện tại và khởi động lại ngữ cảnh khi mở chat mới. |
 | 2026-11-23 | Codex thiết lập nền dự án và nối dữ liệu phòng thật vào Canvas | Git local, cấu hình bỏ qua tệp máy, mô hình ghế, dữ liệu giả lập, hình học và Canvas tổng quan | Gradle build và unit test của dự án chạy thành công. Kiểm tra riêng trên các lớp đã biên dịch xác nhận 196 ghế, 212 chỗ, mã duy nhất và lối đi giữa. Kiểm chứng UI trên Pixel_7 ở hai hướng đang chờ. Camera tương tác và chọn ghế sẽ triển khai ở phần kế tiếp. |
 | 2026-11-24 | Codex nới giới hạn zoom và sửa chuyển từ pinch sang kéo bằng ngón còn lại | Camera trong `CinemaMapView.kt` và giới hạn zoom trong tài liệu | Build và unit test thành công. Phép thử tạm gửi sự kiện vào View trên Pixel_7 xác nhận kéo trái/phải sau zoom và kéo tiếp sau khi nhấc một ngón. Sinh viên kiểm tra lại bằng thao tác trực tiếp. |
+| 2026-11-24 | Codex triển khai Reset View bằng nút Toàn phòng | Layout, MainActivity và camera trong `CinemaMapView.kt` | Build và unit test đã qua. Phép thử trên Pixel_7 xác nhận nút đưa camera về đúng tọa độ và độ phóng mặc định, và chạm vào sơ đồ dừng hoạt ảnh. T06 tích hợp sẽ kiểm tra lại khi có lựa chọn, lọc và Sheet. |
 
 Khi triển khai, bổ sung hướng dẫn chạy theo môi trường đã kiểm chứng, kiến trúc mã nguồn thực tế, tổ chức dữ liệu, công thức đổi tọa độ, hit-testing, quản lý trạng thái, tối ưu hiệu năng và liên kết video. Cập nhật nhật ký sau mỗi phiên sử dụng AI theo [quy chuẩn ghi chép](docs/04-quy-chuan.md).
 

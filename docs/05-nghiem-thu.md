@@ -18,7 +18,7 @@ Ví dụ khi học nhóm C, sinh viên có thể yêu cầu giải thích hệ t
 
 ## Điểm dừng ngày 24/11/2026
 
-Bản hiện tại có sơ đồ 196 ghế, camera vừa phòng khi mở, pinch trong khoảng 0,8×–5×, kéo bằng một ngón và kéo tiếp bằng ngón còn lại sau pinch. Hit-testing đổi tọa độ chạm về sơ đồ và ghi mã ghế vào Logcat. Build và unit test của template đã qua. Phép thử tạm trên Pixel_7 xác nhận pinch tăng tỷ lệ và pan ngang theo cả hai hướng, kể cả sau khi nhấc một ngón.
+Bản hiện tại có sơ đồ 196 ghế, camera vừa phòng khi mở, pinch trong khoảng 0,8×–5×, kéo bằng một ngón và kéo tiếp bằng ngón còn lại sau pinch. Hit-testing đổi tọa độ chạm về sơ đồ và ghi mã ghế vào Logcat. Nút Toàn phòng đưa camera về góc vừa phòng bằng hiệu ứng 220 ms. Khi chạm vào sơ đồ, hiệu ứng dừng ở vị trí đang hiển thị. Build và unit test của template đã qua. Phép thử tạm trên Pixel_7 xác nhận pinch tăng tỷ lệ và pan ngang theo cả hai hướng, kể cả sau khi nhấc một ngón.
 
 ### Ôn lại khi bắt đầu chat tiếp theo
 
@@ -26,11 +26,12 @@ Bản hiện tại có sơ đồ 196 ghế, camera vừa phòng khi mở, pinch 
 - Đọc [MapGeometry.kt](../app/src/main/java/vn/edu/midterm/cinemamap/map/MapGeometry.kt) và lần theo `findSeatAt()` từ điểm world đến mã ghế. Giải thích quy ước bao gồm cạnh trái/trên và loại trừ cạnh phải/dưới.
 - Đọc [CinemaMapView.kt](../app/src/main/java/vn/edu/midterm/cinemamap/map/CinemaMapView.kt) theo chuỗi `onSizeChanged()` → `onDraw()` → `onTouchEvent()`. Ôn `Canvas.save/translate/scale/restoreToCount`, `GestureDetector` với `onDown/onScroll/onSingleTapUp`, và `ScaleGestureDetector` với `onScaleBegin/onScale`, `focusX/Y`, `scaleFactor`.
 - Lần theo `MotionEvent` khi đặt thêm và nhấc bớt ngón. Giải thích `hadMultiplePointers`, ID và tọa độ ngón còn lại, `panBy()`, `limitOffset()`, `invalidate()` và `performClick()`.
-- Bắt đầu bằng giải thích và review. Sau khi sinh viên chọn bước triển khai tiếp, phần camera còn thiếu là Reset View.
+- Lần theo nút Toàn phòng từ listener trong Activity đến `resetView()`, xem `fitCamera` lưu đích thế nào và `ValueAnimator` cập nhật tỷ lệ và độ lệch giữa các khung hình.
 
 ### Checklist còn lại
 
-- [ ] Hoàn thành nhóm C. Thêm Reset View về góc vừa phòng với hoạt ảnh. Kiểm tra kéo tới bốn biên, pinch lệch tâm, giới hạn zoom, chạm sát mép ghế/lối đi sau pan+zoom và sau xoay. Hoàn tất T03–T06 theo phạm vi từng mốc.
+- [x] Thêm Reset View về góc vừa phòng với hoạt ảnh.
+- [ ] Hoàn thành kiểm thử nhóm C. Kiểm tra kéo tới bốn biên, pinch lệch tâm, giới hạn zoom, chạm sát mép ghế/lối đi sau pan+zoom và sau xoay. Hoàn tất T03–T06 theo phạm vi từng mốc.
 - [ ] Nhóm D. Dùng ViewModel quản lý lựa chọn và thông tin suất giả lập. Chạm chọn/bỏ chọn, hiển thị ghế đã đặt hoặc không khả dụng, cập nhật số ghế, số chỗ và tạm tính trong Bottom Sheet hai nấc. Thêm định vị/xóa từng ghế và kiểm tra đồng bộ hai chiều.
 - [ ] Nhóm E. Thêm chú thích và bộ lọc, có điều kiện đang áp dụng, thao tác xóa và kết quả rỗng. Giữ trạng thái lựa chọn, bộ lọc và Sheet khi xoay. Xác minh bố cục ở cả hai hướng.
 - [ ] Nhóm F. Hoàn thành các ca tích hợp, lưu minh chứng, đo độ mượt và chạy build/test/lint từ bản clone sạch.
@@ -57,7 +58,7 @@ Bản hiện tại có sơ đồ 196 ghế, camera vừa phòng khi mở, pinch 
 | T15 | R16, R18 | Đối chiếu tất cả mục README, nhật ký AI có đóng góp thực tế, lỗi/hạn chế và kết quả kiểm tra/sửa của sinh viên. Sinh viên giải thích được camera, hit-testing, lọc và xoay. | README và tự duyệt |
 | T16 | R18 | Video 1–5 phút có đủ thao tác yêu cầu; thử link repository và video bằng quyền người chấm hoặc phiên độc lập. | Link và kết quả kiểm tra quyền |
 
-T01 và T03–T05 đã được kiểm tra một phần. Các ca còn lại cần đối chiếu khi các tính năng tương ứng hoàn thành. Khi thực hiện ghi commit, thiết bị, API/hướng, trạng thái và liên kết minh chứng. Dùng thiết bị hoặc emulator có thể mô phỏng đa điểm. Xoay thực tế và chạm hai ngón là phần kiểm tra của sinh viên, bổ sung cho unit test.
+T01 và T03–T06 đã được kiểm tra một phần. Phép thử Reset View trên Pixel_7 xác nhận camera về đúng góc mặc định và dừng hoạt ảnh khi chạm vào sơ đồ. Các ca còn lại cần đối chiếu khi các tính năng tương ứng hoàn thành. Khi thực hiện ghi commit, thiết bị, API/hướng, trạng thái và liên kết minh chứng. Dùng thiết bị hoặc emulator có thể mô phỏng đa điểm. Xoay thực tế và chạm hai ngón là phần kiểm tra của sinh viên, bổ sung cho unit test.
 
 ## Video dự kiến dài 3 phút 20 giây
 

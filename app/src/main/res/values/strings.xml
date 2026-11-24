@@ -4,4 +4,5 @@
     <string name="seat_standard">Thường</string>
     <string name="seat_vip">VIP</string>
     <string name="seat_couple">Ghế đôi</string>
+    <string name="reset_view">Toàn phòng</string>
 </resources>
