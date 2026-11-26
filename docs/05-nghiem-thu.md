@@ -16,11 +16,15 @@ Commit khi đã gom được một thay đổi có ý nghĩa và kiểm tra tư�
 
 Ví dụ khi học nhóm C, sinh viên có thể yêu cầu giải thích hệ tọa độ và tự viết phép thuận/nghịch, sau đó nhờ review. Khi đã tự kiểm tra một ca chạm mép ghế sau zoom, sinh viên có thể yêu cầu Agent viết thêm các ca cùng mẫu. Những bước học này có thể trải qua nhiều buổi trước khi chốt commit.
 
-## Điểm dừng ngày 24/11/2026
+## Tiến độ cập nhật ngày 27/11/2026
 
 Bản hiện tại có sơ đồ 196 ghế, camera vừa phòng khi mở, pinch trong khoảng 0,8×–5×, kéo bằng một ngón và kéo tiếp bằng ngón còn lại sau pinch. Hit-testing đổi tọa độ chạm về sơ đồ và ghi mã ghế vào Logcat. Nút Toàn phòng đưa camera về góc vừa phòng bằng hiệu ứng 220 ms. Khi chạm vào sơ đồ, hiệu ứng dừng ở vị trí đang hiển thị. Build và unit test của template đã qua. Phép thử tạm trên Pixel_7 xác nhận pinch tăng tỷ lệ và pan ngang theo cả hai hướng, kể cả sau khi nhấc một ngón.
 
-### Ôn lại khi bắt đầu chat tiếp theo
+Mốc mã nguồn đối chiếu là `915b1a7`. Đã nối `onSeatClickListener` → `BookingViewModel.onSeatTapped()` → `StateFlow` → `CinemaMapView.selectedSeatIds`. Ghế chọn có viền chàm và dấu ✓, ghế đã đặt/không khả dụng được chặn chọn. State chứa ghế đang xem, số ghế, số chỗ và tổng tiền. `removeSeat()` và `clearSelection()` đã có trong ViewModel, còn chờ UI sử dụng. Bottom Sheet, định vị, bộ lọc và chú thích đang chờ triển khai.
+
+Unit test hiện có bao phủ phần logic T02: A05 + E08 + K03 cho 3 ghế, 4 chỗ, 385.000 đ; bỏ E08 còn 275.000 đ; chạm A03 đã đặt chỉ cập nhật ghế đang xem. Còn chờ kiểm tra riêng ghế không khả dụng và phần hiển thị của T02. ViewModel giữ lựa chọn khi xoay theo cơ chế hiện tại, còn camera trở về toàn phòng. SavedStateHandle và kiểm thử phục hồi đầy đủ đang chờ.
+
+### Các phần cần hiểu khi tiếp tục
 
 - Đọc [CameraTransform.kt](../app/src/main/java/vn/edu/midterm/cinemamap/map/CameraTransform.kt) và giải thích `worldToView()`, `viewToWorld()`, `scale` và `offset` bằng ví dụ ghế A03.
 - Đọc [MapGeometry.kt](../app/src/main/java/vn/edu/midterm/cinemamap/map/MapGeometry.kt) và lần theo `findSeatAt()` từ điểm world đến mã ghế. Giải thích quy ước bao gồm cạnh trái/trên và loại trừ cạnh phải/dưới.
@@ -28,11 +32,14 @@ Bản hiện tại có sơ đồ 196 ghế, camera vừa phòng khi mở, pinch 
 - Lần theo `MotionEvent` khi đặt thêm và nhấc bớt ngón. Giải thích `hadMultiplePointers`, ID và tọa độ ngón còn lại, `panBy()`, `limitOffset()`, `invalidate()` và `performClick()`.
 - Lần theo nút Toàn phòng từ listener trong Activity đến `resetView()`, xem `fitCamera` lưu đích thế nào và `ValueAnimator` cập nhật tỷ lệ và độ lệch giữa các khung hình.
 
+- Đọc `BookingUiState`, `BookingViewModel` và collector trong Activity để hiểu cách một lần chọn ghế cập nhật Canvas và các tổng dẫn xuất.
+
 ### Checklist còn lại
 
 - [x] Thêm Reset View về góc vừa phòng với hoạt ảnh.
 - [ ] Hoàn thành kiểm thử nhóm C. Kiểm tra kéo tới bốn biên, pinch lệch tâm, giới hạn zoom, chạm sát mép ghế/lối đi sau pan+zoom và sau xoay. Hoàn tất T03–T06 theo phạm vi từng mốc.
-- [ ] Nhóm D. Dùng ViewModel quản lý lựa chọn và thông tin suất giả lập. Chạm chọn/bỏ chọn, hiển thị ghế đã đặt hoặc không khả dụng, cập nhật số ghế, số chỗ và tạm tính trong Bottom Sheet hai nấc. Thêm định vị/xóa từng ghế và kiểm tra đồng bộ hai chiều.
+- [x] Nhóm D. Nối ViewModel với Canvas để chọn/bỏ chọn và vẽ viền cùng dấu ✓. Tính số ghế/chỗ/tổng tiền trong state, lưu ghế đang xem và chặn chọn ghế đã đặt/không khả dụng.
+- [ ] Nhóm D. Thêm thông tin suất giả lập và Bottom Sheet hai nấc có danh sách cuộn, hiện tóm tắt, giá và chi tiết ghế đang xem. Nối xóa từng ghế, định vị trên Canvas và nghiệm thu đồng bộ hai chiều. Đây là bước triển khai kế tiếp.
 - [ ] Nhóm E. Thêm chú thích và bộ lọc, có điều kiện đang áp dụng, thao tác xóa và kết quả rỗng. Giữ trạng thái lựa chọn, bộ lọc và Sheet khi xoay. Xác minh bố cục ở cả hai hướng.
 - [ ] Nhóm F. Hoàn thành các ca tích hợp, lưu minh chứng, đo độ mượt và chạy build/test/lint từ bản clone sạch.
 - [ ] Nhóm G. Cập nhật README và nhật ký AI theo bản thực tế, đối chiếu lịch sử Git theo đề, quay video 1–5 phút và kiểm tra quyền truy cập repo/video.
@@ -58,7 +65,7 @@ Bản hiện tại có sơ đồ 196 ghế, camera vừa phòng khi mở, pinch 
 | T15 | R16, R18 | Đối chiếu tất cả mục README, nhật ký AI có đóng góp thực tế, lỗi/hạn chế và kết quả kiểm tra/sửa của sinh viên. Sinh viên giải thích được camera, hit-testing, lọc và xoay. | README và tự duyệt |
 | T16 | R18 | Video 1–5 phút có đủ thao tác yêu cầu; thử link repository và video bằng quyền người chấm hoặc phiên độc lập. | Link và kết quả kiểm tra quyền |
 
-T01 và T03–T06 đã được kiểm tra một phần. Phép thử Reset View trên Pixel_7 xác nhận camera về đúng góc mặc định và dừng hoạt ảnh khi chạm vào sơ đồ. Các ca còn lại cần đối chiếu khi các tính năng tương ứng hoàn thành. Khi thực hiện ghi commit, thiết bị, API/hướng, trạng thái và liên kết minh chứng. Dùng thiết bị hoặc emulator có thể mô phỏng đa điểm. Xoay thực tế và chạm hai ngón là phần kiểm tra của sinh viên, bổ sung cho unit test.
+T01 và T03–T06 đã được kiểm tra một phần. T02 đã có unit test cho phần logic chọn ghế và tính tổng, còn hiển thị Sheet và ca ghế không khả dụng cần kiểm chứng. T09–T10 chờ UI Bottom Sheet. T11–T12 còn kiểm chứng xoay, camera và phục hồi. Phép thử Reset View trên Pixel_7 xác nhận camera về đúng góc mặc định và dừng hoạt ảnh khi chạm vào sơ đồ. Các ca còn lại cần đối chiếu khi các tính năng tương ứng hoàn thành. Khi thực hiện ghi commit, thiết bị, API/hướng, trạng thái và liên kết minh chứng. Dùng thiết bị hoặc emulator có thể mô phỏng đa điểm. Xoay thực tế và chạm hai ngón là phần kiểm tra của sinh viên, bổ sung cho unit test.
 
 ## Video dự kiến dài 3 phút 20 giây
 
