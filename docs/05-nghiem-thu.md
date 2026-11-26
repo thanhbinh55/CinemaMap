@@ -20,7 +20,7 @@ Ví dụ khi học nhóm C, sinh viên có thể yêu cầu giải thích hệ t
 
 Bản hiện tại có sơ đồ 196 ghế, camera vừa phòng khi mở, pinch trong khoảng 0,8×–5×, kéo bằng một ngón và kéo tiếp bằng ngón còn lại sau pinch. Hit-testing đổi tọa độ chạm về sơ đồ và ghi mã ghế vào Logcat. Nút Toàn phòng đưa camera về góc vừa phòng bằng hiệu ứng 220 ms. Khi chạm vào sơ đồ, hiệu ứng dừng ở vị trí đang hiển thị. Build và unit test của template đã qua. Phép thử tạm trên Pixel_7 xác nhận pinch tăng tỷ lệ và pan ngang theo cả hai hướng, kể cả sau khi nhấc một ngón.
 
-Mốc mã nguồn đối chiếu là `915b1a7`. Đã nối `onSeatClickListener` → `BookingViewModel.onSeatTapped()` → `StateFlow` → `CinemaMapView.selectedSeatIds`. Ghế chọn có viền chàm và dấu ✓, ghế đã đặt/không khả dụng được chặn chọn. State chứa ghế đang xem, số ghế, số chỗ và tổng tiền. `removeSeat()` và `clearSelection()` đã có trong ViewModel, còn chờ UI sử dụng. Bottom Sheet, định vị, bộ lọc và chú thích đang chờ triển khai.
+Mốc mã nguồn đối chiếu là `915b1a7`. Đã nối `onSeatClickListener` → `BookingViewModel.onSeatTapped()` → `StateFlow` → `CinemaMapView.selectedSeatIds`. Ghế chọn có viền chàm và dấu ✓, ghế đã đặt/không khả dụng được chặn chọn. State chứa ghế đang xem, số ghế, số chỗ và tổng tiền. `removeSeat()` và `clearSelection()` đã có trong ViewModel, còn chờ UI sử dụng. Bottom Sheet đã có hai nấc, tóm tắt và danh sách cuộn. Dòng ghế gọi định vị và vẽ vòng đánh dấu, nút Xóa gửi sự kiện về ViewModel. Bộ lọc và chú thích đang chờ triển khai.
 
 Unit test hiện có bao phủ phần logic T02: A05 + E08 + K03 cho 3 ghế, 4 chỗ, 385.000 đ; bỏ E08 còn 275.000 đ; chạm A03 đã đặt chỉ cập nhật ghế đang xem. Còn chờ kiểm tra riêng ghế không khả dụng và phần hiển thị của T02. ViewModel giữ lựa chọn khi xoay theo cơ chế hiện tại, còn camera trở về toàn phòng. SavedStateHandle và kiểm thử phục hồi đầy đủ đang chờ.
 
@@ -39,7 +39,8 @@ Unit test hiện có bao phủ phần logic T02: A05 + E08 + K03 cho 3 ghế, 4 
 - [x] Thêm Reset View về góc vừa phòng với hoạt ảnh.
 - [ ] Hoàn thành kiểm thử nhóm C. Kiểm tra kéo tới bốn biên, pinch lệch tâm, giới hạn zoom, chạm sát mép ghế/lối đi sau pan+zoom và sau xoay. Hoàn tất T03–T06 theo phạm vi từng mốc.
 - [x] Nhóm D. Nối ViewModel với Canvas để chọn/bỏ chọn và vẽ viền cùng dấu ✓. Tính số ghế/chỗ/tổng tiền trong state, lưu ghế đang xem và chặn chọn ghế đã đặt/không khả dụng.
-- [ ] Nhóm D. Thêm thông tin suất giả lập và Bottom Sheet hai nấc có danh sách cuộn, hiện tóm tắt, giá và chi tiết ghế đang xem. Nối xóa từng ghế, định vị trên Canvas và nghiệm thu đồng bộ hai chiều. Đây là bước triển khai kế tiếp.
+- [x] Nhóm D. Thêm thông tin suất giả lập và Bottom Sheet hai nấc có danh sách cuộn, hiện tóm tắt, giá và trạng thái ghế đang xem. Nối xóa từng ghế và định vị trên Canvas.
+- [ ] Hoàn tất nghiệm thu nhóm D với thao tác trực tiếp trên Sheet và khi áp dụng bộ lọc.
 - [ ] Nhóm E. Thêm chú thích và bộ lọc, có điều kiện đang áp dụng, thao tác xóa và kết quả rỗng. Giữ trạng thái lựa chọn, bộ lọc và Sheet khi xoay. Xác minh bố cục ở cả hai hướng.
 - [ ] Nhóm F. Hoàn thành các ca tích hợp, lưu minh chứng, đo độ mượt và chạy build/test/lint từ bản clone sạch.
 - [ ] Nhóm G. Cập nhật README và nhật ký AI theo bản thực tế, đối chiếu lịch sử Git theo đề, quay video 1–5 phút và kiểm tra quyền truy cập repo/video.
@@ -65,7 +66,7 @@ Unit test hiện có bao phủ phần logic T02: A05 + E08 + K03 cho 3 ghế, 4 
 | T15 | R16, R18 | Đối chiếu tất cả mục README, nhật ký AI có đóng góp thực tế, lỗi/hạn chế và kết quả kiểm tra/sửa của sinh viên. Sinh viên giải thích được camera, hit-testing, lọc và xoay. | README và tự duyệt |
 | T16 | R18 | Video 1–5 phút có đủ thao tác yêu cầu; thử link repository và video bằng quyền người chấm hoặc phiên độc lập. | Link và kết quả kiểm tra quyền |
 
-T01 và T03–T06 đã được kiểm tra một phần. T02 đã có unit test cho phần logic chọn ghế và tính tổng, còn hiển thị Sheet và ca ghế không khả dụng cần kiểm chứng. T09–T10 chờ UI Bottom Sheet. T11–T12 còn kiểm chứng xoay, camera và phục hồi. Phép thử Reset View trên Pixel_7 xác nhận camera về đúng góc mặc định và dừng hoạt ảnh khi chạm vào sơ đồ. Các ca còn lại cần đối chiếu khi các tính năng tương ứng hoàn thành. Khi thực hiện ghi commit, thiết bị, API/hướng, trạng thái và liên kết minh chứng. Dùng thiết bị hoặc emulator có thể mô phỏng đa điểm. Xoay thực tế và chạm hai ngón là phần kiểm tra của sinh viên, bổ sung cho unit test.
+T01 và T03–T06 đã được kiểm tra một phần. T02 đã có unit test cho phần logic chọn ghế và tính tổng, đã kiểm tra hiển thị tóm tắt và thao tác xóa/định vị trên Sheet bằng BookingSheetTest; ca ghế không khả dụng cần kiểm chứng riêng. T09–T10 đã kiểm tra một phần: danh sách cuộn ở hướng ngang, định vị và xóa; tương tác kéo Sheet bằng tay và phối hợp bộ lọc còn chờ. T11–T12 còn kiểm chứng xoay, camera và phục hồi. Phép thử Reset View trên Pixel_7 xác nhận camera về đúng góc mặc định và dừng hoạt ảnh khi chạm vào sơ đồ. Các ca còn lại cần đối chiếu khi các tính năng tương ứng hoàn thành. Khi thực hiện ghi commit, thiết bị, API/hướng, trạng thái và liên kết minh chứng. Dùng thiết bị hoặc emulator có thể mô phỏng đa điểm. Xoay thực tế và chạm hai ngón là phần kiểm tra của sinh viên, bổ sung cho unit test.
 
 ## Video dự kiến dài 3 phút 20 giây
 

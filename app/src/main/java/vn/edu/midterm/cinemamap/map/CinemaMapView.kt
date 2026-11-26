@@ -47,9 +47,11 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         set(value) {
             if (field != value) {
                 field = value
+                if (locatedSeatId !in value) locatedSeatId = null
                 invalidate()
             }
         }
+    private var locatedSeatId: String? = null
     private var camera: CameraTransform? = null
     private var fitCamera: CameraTransform? = null
     private var resetAnimator: ValueAnimator? = null
@@ -126,6 +128,8 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
                 resetAnimator?.cancel()
+                locatedSeatId = null
+                invalidate()
                 hadMultiplePointers = false
                 remainingPointerId = null
             }
@@ -166,17 +170,40 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         resetAnimator?.cancel()
+        val oldCamera = camera
+        val oldFit = fitCamera
+        val oldCenter = oldCamera?.viewToWorld(oldw / 2f, oldh / 2f)
         val scale = minOf(w / geometry.width, h / geometry.height)
         val offsetX = (w - geometry.width * scale) / 2f
         val offsetY = (h - geometry.height * scale) / 2f
 
         fitCamera = if (scale > 0f) CameraTransform(scale, offsetX, offsetY) else null
-        camera = fitCamera
+        camera = if (oldCamera != null && oldFit != null && oldCenter != null && oldCamera != oldFit && scale > 0f) {
+            val resizedScale = scale * (oldCamera.scale / oldFit.scale)
+            boundedCamera(resizedScale, w / 2f - oldCenter.x * resizedScale, h / 2f - oldCenter.y * resizedScale)
+        } else {
+            fitCamera
+        }
     }
 
     override fun onDetachedFromWindow() {
         resetAnimator?.cancel()
         super.onDetachedFromWindow()
+    }
+
+    fun locateSeat(seatId: String) {
+        val position = geometry.rows.asSequence().flatMap { it.seats.asSequence() }
+            .firstOrNull { it.seat.id == seatId } ?: return
+        val fit = fitCamera ?: return
+        resetAnimator?.cancel()
+        val scale = maxOf(camera?.scale ?: fit.scale, fit.scale * 2.5f)
+        camera = boundedCamera(
+            scale,
+            width / 2f - (position.left + position.width / 2f) * scale,
+            height / 2f - (position.top + geometry.seatHeight / 2f) * scale
+        )
+        locatedSeatId = seatId
+        invalidate()
     }
 
     fun resetView() {
@@ -281,6 +308,12 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         val middleY = (top + bottom) / 2f
         val seat = position.seat
         val isSelected = seat.id in selectedSeatIds
+        if (seat.id == locatedSeatId) {
+            paint.style = Paint.Style.STROKE
+            paint.strokeWidth = 3f
+            paint.color = screenColor
+            canvas.drawCircle(middleX, middleY, position.width / 2f + 6f, paint)
+        }
 
         // 1. Vẽ nền ghế
         paint.style = Paint.Style.FILL

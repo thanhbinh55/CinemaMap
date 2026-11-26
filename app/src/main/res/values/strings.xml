@@ -5,4 +5,19 @@
     <string name="seat_vip">VIP</string>
     <string name="seat_couple">Ghế đôi</string>
     <string name="reset_view">Toàn phòng</string>
+    <string name="mock_showtime">Rạp Ánh Đăng · Phòng 01 · 19:00 · Suất giả lập</string>
+    <string name="expand_sheet">Xem ghế</string>
+    <string name="collapse_sheet">Thu gọn</string>
+    <string name="empty_selection">Chạm ghế trống trên sơ đồ để chọn.</string>
+    <string name="selection_summary">%1$d ghế · %2$d chỗ\n%3$s</string>
+    <string name="remove_seat">Xóa</string>
+    <string name="remove_seat_description">Xóa ghế %1$s</string>
+    <string name="locate_seat_description">Định vị ghế %1$s</string>
+    <string name="seat_item">%1$s · %2$s · %3$d chỗ\n%4$s</string>
+    <string name="inspected_seat">%1$s · %2$s · %3$s</string>
+    <string name="seat_available">Trống</string>
+    <string name="seat_selected">Đang chọn</string>
+    <string name="seat_booked">Đã đặt</string>
+    <string name="seat_unavailable">Không khả dụng</string>
+    <string name="no_inspected_seat">Chạm ghế để xem thông tin.</string>
 </resources>

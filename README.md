@@ -1,6 +1,6 @@
 # Sơ đồ phòng chiếu rạp phim
 
-**Trạng thái: đã có Canvas tổng quan, pinch, pan, nút Toàn phòng và chọn/bỏ chọn ghế qua ViewModel.** Sinh viên xác định công việc tiếp theo và cách Agent hỗ trợ. Duyệt kế hoạch xác nhận hướng làm chung. Mỗi yêu cầu cụ thể xác định phần việc Agent được làm trong workspace.
+**Trạng thái: đã có Canvas tổng quan, pinch, pan, nút Toàn phòng và Bottom Sheet đồng bộ với lựa chọn ghế qua ViewModel.** Sinh viên xác định công việc tiếp theo và cách Agent hỗ trợ. Duyệt kế hoạch xác nhận hướng làm chung. Mỗi yêu cầu cụ thể xác định phần việc Agent được làm trong workspace.
 
 Đồ án cá nhân trong một tuần cho học phần Phát triển phần mềm cho thiết bị di động. Đề tài số 2 là sơ đồ phòng chiếu rạp phim. Phương án đề xuất dùng dữ liệu giả lập, Android Kotlin và một Custom View vẽ toàn bộ sơ đồ bằng Canvas.
 
@@ -9,7 +9,7 @@
 1. Mở thư mục chứa README này (`CinemaMap/`) trong Android Studio và đợi Gradle Sync.
 2. Chọn máy ảo `Pixel_7`, rồi Run cấu hình `app`.
 3. Khi mở app, kiểm tra màn chiếu, lối đi ở giữa và ba khu ghế. Thử pinch, kéo và bấm Toàn phòng để về góc mặc định.
-4. Chạm ghế trống để chọn hoặc bỏ chọn, quan sát viền chàm và dấu ✓. Chạm ghế đã đặt/không khả dụng để kiểm tra chúng không được thêm vào lựa chọn. Thông tin ghế đang xem, số chỗ và tổng tiền hiện được lưu trong state, sẽ được hiển thị khi có Bottom Sheet.
+4. Chạm ghế trống để chọn hoặc bỏ chọn, quan sát viền chàm và dấu ✓. Chạm ghế đã đặt/không khả dụng để kiểm tra chúng không được thêm vào lựa chọn. Bottom Sheet hiện ghế đang xem, số ghế/chỗ và tổng tiền. Bấm Xem ghế để mở danh sách, bấm dòng ghế để định vị, bấm Xóa để bỏ chọn.
 5. Xoay dọc/ngang để kiểm tra bố cục và lựa chọn. ViewModel giữ lựa chọn khi Activity được tạo lại do xoay, còn camera hiện được tính lại về góc toàn phòng. Ca nghiệm thu xoay đầy đủ đang chờ.
 
 Dự án được tạo với Kotlin/Views, Gradle Wrapper 9.6.0, AGP 9.4.1, Gradle JDK 25, compile/target SDK 37 và min SDK 26. Kiểm tra dòng lệnh từ thư mục `CinemaMap/` bằng `./gradlew --offline :app:assembleDebug :app:testDebugUnitTest` khi đã có cache. `CinemaMap/` là gốc dự án Android và repo Git.
@@ -23,12 +23,13 @@ Mốc mã nguồn đang đối chiếu là `915b1a7`. Checklist và phạm vi ng
 | Canvas, dữ liệu 196 ghế, hình học và hit-testing | Đã triển khai. Kiểm thử đầy đủ các cạnh ghế sau pan/zoom/xoay đang chờ |
 | Pan, pinch 0,8×–5× và Toàn phòng | Đã triển khai. Có phép thử camera trên Pixel_7, còn ca tích hợp với Sheet và bộ lọc |
 | ViewModel, chọn/bỏ chọn và phản hồi trên Canvas | Đã triển khai. Unit test bao phủ phần logic T02 với ba loại ghế và ghế đã đặt |
-| Số ghế, số chỗ, tổng tiền và ghế đang xem | Đã có trong BookingUiState. Phần hiển thị đang chờ Bottom Sheet |
-| Bottom Sheet, định vị ghế, chú thích và bộ lọc | Chờ triển khai. ViewModel đã có removeSeat/clearSelection để nối UI |
+| Số ghế, số chỗ, tổng tiền và ghế đang xem | Đã có trong BookingUiState. Đã hiển thị trong phần tóm tắt của Bottom Sheet |
+| Bottom Sheet và định vị ghế | Đã có hai nấc, danh sách cuộn, định vị và xóa từng ghế. Có kiểm thử tích hợp trên Pixel_7 |
+| Chú thích và bộ lọc | Chờ triển khai |
 | Xoay màn hình và phục hồi | Lựa chọn được giữ bằng ViewModel khi xoay. Còn kiểm chứng đầy đủ, giữ camera và bổ sung SavedStateHandle |
 | Kiểm thử tổng thể và hồ sơ nộp | Đang thực hiện. Còn đo hiệu năng, clone sạch, video và kiểm tra quyền truy cập liên kết |
 
-**Việc tiếp theo** là Bottom Sheet hai nấc, hiển thị state và hỗ trợ xóa/định vị từng ghế.
+**Việc tiếp theo** là chú thích, bộ lọc và kiểm thử phối hợp với Bottom Sheet.
 
 ## Bộ kế hoạch
 
@@ -68,6 +69,7 @@ Chia commit theo phần thay đổi có ý nghĩa và nhịp làm thực tế. T
 | 2026-11-24 | Codex triển khai Reset View bằng nút Toàn phòng | Layout, MainActivity và camera trong `CinemaMapView.kt` | Build và unit test đã qua. Phép thử trên Pixel_7 xác nhận nút đưa camera về đúng tọa độ và độ phóng mặc định, và chạm vào sơ đồ dừng hoạt ảnh. T06 tích hợp sẽ kiểm tra lại khi có lựa chọn, lọc và Sheet. |
 | 2026-11-24 | Antigravity cùng sinh viên triển khai BookingViewModel và chọn ghế trên Canvas | `BookingUiState.kt`, `BookingViewModel.kt`, `BookingViewModelTest.kt`, `CinemaMapView.kt`, `MainActivity.kt` | Build và unit test bao phủ phần logic T02 đã qua: chọn/bỏ chọn, tổng số ghế/chỗ, giá theo từng đối tượng và chặn ghế đã đặt. Nhánh không khả dụng đã có trong mã, còn chờ test riêng. Hiển thị thông tin và tạm tính qua Bottom Sheet cùng nghiệm thu T02 trên UI đang chờ. |
 | 2026-11-27 | Codex đồng nhất tiến độ README và checklist với mã nguồn 915b1a7 | README.md và docs/05-nghiem-thu.md | Đối chiếu ViewModel, luồng Activity–Canvas và unit test hiện có. Ghi rõ phạm vi logic T02 đã có bằng chứng, các ca UI và xoay đang chờ. |
+| 2026-11-27 | Codex triển khai Bottom Sheet hai nấc và nối với state hiện có | MainActivity, layout, SelectedSeatAdapter, locateSeat và kiểm thử BookingSheetTest | Build/unit test đã qua. Hai ca tích hợp trên Pixel_7 kiểm tra tổng tiền, xóa/định vị, dựng lại Activity và vùng map/danh sách cuộn ở hướng ngang. Bộ lọc và khôi phục sau khi hệ thống hủy tiến trình còn chờ. |
 
 Khi triển khai, bổ sung hướng dẫn chạy theo môi trường đã kiểm chứng, kiến trúc mã nguồn thực tế, tổ chức dữ liệu, công thức đổi tọa độ, hit-testing, quản lý trạng thái, tối ưu hiệu năng và liên kết video. Cập nhật nhật ký sau mỗi phiên sử dụng AI theo [quy chuẩn ghi chép](docs/04-quy-chuan.md).
 
