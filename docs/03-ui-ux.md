@@ -17,7 +17,7 @@
 | Trạng thái | Dấu hiệu | Chạm |
 | --- | --- | --- |
 | Trống | Nền theo loại + viền. Ghế đôi có nét chia và ký hiệu 2 chỗ | Chọn ghế hoặc cặp |
-| Đang chọn | Viền đậm và dấu ✓, giữ nhận diện loại bằng nền hoặc dấu chia | Bỏ chọn |
+| Đang chọn | Nền chàm đậm, chữ trắng và dấu ✓ ở mức tổng quan | Bỏ chọn |
 | Đã đặt | Nền trung tính và vạch ngang | Xem mã, loại và trạng thái |
 | Không khả dụng | Nền trung tính và dấu × hoặc nét chéo | Xem mã, loại và trạng thái |
 | Ngoài bộ lọc | Mờ hơn, kèm nhãn giải thích trong chú thích. Vòng định vị tạm thời nếu yêu cầu từ Sheet | Vùng mờ bỏ qua thao tác chạm |
@@ -58,3 +58,20 @@ DỌC — thu gọn                                  NGANG — mở rộng
 4. Duyệt ghế bằng trình đọc màn hình qua danh sách điều hướng theo hàng hoặc accessibility node ảo, ưu tiên giải pháp ít làm tăng độ phức tạp của Canvas.
 
 Chọn từng cải tiến sau khi đạt các ca bắt buộc. Luồng xác nhận đặt vé là phần mở rộng, còn trạng thái vé Đã đặt đã có ngay trong fixture bắt buộc.
+
+## Điều chỉnh theo ảnh tham khảo ngày 27/11/2026
+
+- Hướng dọc giữ Canvas, thanh Legend và Bottom Sheet. Nút Toàn phòng là biểu tượng khung vừa phòng 48dp ở góc trái trên vùng sơ đồ, có mô tả và tooltip.
+- Hướng ngang dành 64% chiều rộng cho sơ đồ và Legend, 36% cho panel Sheet. Sheet có hai nấc trong vùng bên phải. Chiều cao của Sheet hoạt động độc lập với chiều cao Canvas.
+- Ghế và mẫu Legend bo nhẹ, nền xanh dương nhạt cho Thường, tím nhạt cho VIP, bạc hà cho Đôi. Ghế chọn dùng chàm đậm và chữ trắng. Ghế đã đặt có nền xám xanh đậm, ghế không khả dụng có nền vàng hổ phách nhạt. Trạng thái không dùng ký hiệu; mã ghế hiện khi kích thước đủ đọc.
+- Pan có khoảng đệm 15% vùng nhìn trên mỗi trục. Nội dung vẫn bị giới hạn để giữ sơ đồ trong tầm điều hướng. Reset View căn giữa theo góc mặc định.
+- Minimap ở góc phải trên Canvas hiện khi camera di chuyển hoặc zoom vượt mức toàn phòng. Mô hình thu nhỏ dùng cùng dữ liệu ghế, màu và bộ lọc. Khung vàng là phần world đang nhìn thấy, được tính bằng camera.viewToWorld trên hai góc viewport. Chạm minimap đưa về toàn phòng.
+- Tham khảo thứ bậc thông tin và thao tác từ ảnh người dùng cung cấp, giữ dữ liệu và hình vẽ riêng của CinemaMap.
+
+### Ý tưởng mở rộng góc nhìn 3D
+
+Sau khi nghiệm thu phần 2D, bổ sung nút Xem góc nhìn cho ghế đang xem. Luồng dự kiến là chi tiết ghế → xem trước từ vị trí ghế → quay lại sơ đồ với lựa chọn hiện tại. Tách cảnh 3D khỏi Canvas 2D, dùng cùng ID ghế và dữ liệu vị trí để đặt camera hướng về tâm màn chiếu. Cần thống nhất kích thước phòng, khoảng cách hàng, chiều cao mắt và độ dốc trước khi xem kết quả như mô phỏng thực tế. Phần 3D đang ở giai đoạn ý tưởng.
+
+## Điều chỉnh nhận diện trạng thái bằng màu
+
+Theo yêu cầu sinh viên, các mẫu Legend và ghế trên sơ đồ dùng màu nền để phân biệt trạng thái, loại bỏ các dấu ✓, −, × và vạch chia cặp. Ghế đôi có khối rộng hơn và nhãn 2 chỗ trong chi tiết. Đang chọn là chàm đậm, Đã đặt là xám xanh đậm, Không khả dụng là vàng hổ phách nhạt. Mã ghế vẫn hiện khi zoom đủ lớn. Legend, Sheet và bộ lọc tiếp tục ghi tên trạng thái bằng chữ.

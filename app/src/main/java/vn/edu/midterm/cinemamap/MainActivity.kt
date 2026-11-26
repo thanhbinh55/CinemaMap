@@ -1,9 +1,11 @@
 package vn.edu.midterm.cinemamap
 
+import android.content.res.Configuration
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -72,7 +74,9 @@ class MainActivity : AppCompatActivity() {
         list.itemAnimator = null
         ViewCompat.setAccessibilityPaneTitle(sheet, getString(R.string.expand_sheet))
 
+        val landscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         fun updateMapHeight() {
+            if (landscape) return
             // Apply after CoordinatorLayout finishes positioning its children.
             cinemaMap.post {
                 // Legend occupies the strip immediately above the sheet.
@@ -88,7 +92,7 @@ class MainActivity : AppCompatActivity() {
         fun sizeSheet() {
             if (content.height <= 0 || header.height <= 0) return
             // Leave a usable map above the expanded sheet, including in landscape.
-            val sheetHeight = maxOf((content.height * 0.48f).toInt(), header.height + (48 * resources.displayMetrics.density).toInt())
+            val sheetHeight = if (landscape) content.height else maxOf((content.height * 0.48f).toInt(), header.height + (48 * resources.displayMetrics.density).toInt())
                 .coerceAtMost((content.height * 0.65f).toInt())
             if (sheet.layoutParams.height != sheetHeight) {
                 sheet.updateLayoutParams { height = sheetHeight }
@@ -218,15 +222,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupLegend() {
         val items = findViewById<LinearLayout>(R.id.legend_items)
+        findViewById<HorizontalScrollView>(R.id.legend_scroll).doOnLayout { it.scrollTo(0, 0) }
         val density = resources.displayMetrics.density
 
-        fun addItem(labelResource: Int, symbol: String, colorResource: Int, selected: Boolean = false) {
+        fun addItem(labelResource: Int, colorResource: Int, selected: Boolean = false) {
             val item = LayoutInflater.from(this).inflate(R.layout.item_seat_legend, items, false)
             val sample = item.findViewById<TextView>(R.id.legend_sample)
-            sample.text = symbol
-            sample.setTextColor(getColor(if (selected) R.color.seat_accent else R.color.seat_outline))
             sample.background = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
+                cornerRadius = 4f * density
                 setColor(getColor(colorResource))
                 val strokeColor = if (selected) R.color.seat_accent else R.color.seat_outline
                 val strokeWidth = if (selected) 2f else 1f
@@ -239,12 +243,12 @@ class MainActivity : AppCompatActivity() {
             items.addView(item)
         }
 
-        addItem(R.string.seat_standard, "", R.color.seat_standard)
-        addItem(R.string.seat_vip, "", R.color.seat_vip)
-        addItem(R.string.seat_couple, "|", R.color.seat_couple)
-        addItem(R.string.seat_selected, "✓", R.color.seat_standard, selected = true)
-        addItem(R.string.seat_booked, "−", R.color.seat_occupied)
-        addItem(R.string.seat_unavailable, "×", R.color.seat_occupied)
+        addItem(R.string.seat_standard, R.color.seat_standard)
+        addItem(R.string.seat_vip, R.color.seat_vip)
+        addItem(R.string.seat_couple, R.color.seat_couple)
+        addItem(R.string.seat_selected, R.color.seat_accent, selected = true)
+        addItem(R.string.seat_booked, R.color.seat_occupied)
+        addItem(R.string.seat_unavailable, R.color.seat_unavailable)
 
         findViewById<View>(R.id.legend_details).setOnClickListener {
             MaterialAlertDialogBuilder(this)

@@ -94,7 +94,12 @@ class BookingSheetTest {
                 assertTrue("map=${map.width}x${map.height}, sheetTop=${sheet.top}, sheetHeight=${sheet.height}, parentHeight=${(sheet.parent as View).height}, header=${activity.findViewById<View>(R.id.sheet_header).height}, state=${BottomSheetBehavior.from(sheet).state}", map.height > 80)
                 val legend = activity.findViewById<View>(R.id.seat_legend)
                 assertTrue(map.bottom <= legend.y + 2)
-                assertTrue(legend.y + legend.height <= sheet.top + 2)
+                if (activity.resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
+                    assertTrue(map.right <= activity.findViewById<View>(R.id.booking_content).left + 2)
+                    assertTrue(map.height >= activity.findViewById<View>(R.id.booking_content).height * 0.4f)
+                } else {
+                    assertTrue(legend.y + legend.height <= sheet.top + 2)
+                }
                 assertTrue(list.height > 0)
                 assertTrue(list.canScrollVertically(1))
                 assertEquals(BottomSheetBehavior.STATE_EXPANDED, BottomSheetBehavior.from(sheet).state)
@@ -124,7 +129,13 @@ class BookingSheetTest {
             scenario.onActivity { activity ->
                 assertEquals(setOf("A01"),
                     activity.findViewById<CinemaMapView>(R.id.cinema_map).selectedSeatIds)
-                assertEquals(6, activity.findViewById<LinearLayout>(R.id.legend_items).childCount)
+                val items = activity.findViewById<LinearLayout>(R.id.legend_items)
+                assertEquals(6, items.childCount)
+                val sample = items.getChildAt(0).findViewById<View>(R.id.legend_sample)
+                val visible = android.graphics.Rect()
+                assertTrue(sample.getGlobalVisibleRect(visible))
+                assertEquals("First legend sample must be fully visible", sample.width, visible.width())
+                assertEquals(sample.height, visible.height())
             }
         }
     }
@@ -147,7 +158,12 @@ class BookingSheetTest {
                 assertTrue(map.height > 0)
                 val legend = activity.findViewById<View>(R.id.seat_legend)
                 assertTrue(map.bottom <= legend.y + 2)
-                assertTrue(legend.y + legend.height <= sheet.top + 2)
+                if (activity.resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
+                    assertTrue(map.right <= activity.findViewById<View>(R.id.booking_content).left + 2)
+                    assertTrue(map.height >= activity.findViewById<View>(R.id.booking_content).height * 0.4f)
+                } else {
+                    assertTrue(legend.y + legend.height <= sheet.top + 2)
+                }
                 val summary = activity.findViewById<TextView>(R.id.booking_summary).text.toString()
                 assertTrue(summary.contains("3 ghế"))
                 assertTrue(summary.contains("4 chỗ"))

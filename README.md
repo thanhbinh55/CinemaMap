@@ -9,14 +9,14 @@
 1. Mở thư mục chứa README này (`CinemaMap/`) trong Android Studio và đợi Gradle Sync.
 2. Chọn máy ảo `Pixel_7`, rồi Run cấu hình `app`.
 3. Khi mở app, kiểm tra màn chiếu, lối đi ở giữa và ba khu ghế. Thử pinch, kéo và bấm Toàn phòng để về góc mặc định.
-4. Chạm ghế trống để chọn hoặc bỏ chọn, quan sát viền chàm và dấu ✓. Chạm ghế đã đặt/không khả dụng để kiểm tra chúng không được thêm vào lựa chọn. Bottom Sheet hiện ghế đang xem, số ghế/chỗ và tổng tiền. Bấm Xem ghế để mở danh sách, bấm dòng ghế để định vị, bấm Xóa để bỏ chọn.
+4. Chạm ghế trống để chọn hoặc bỏ chọn, quan sát nền chàm đậm. Chạm ghế đã đặt/không khả dụng để kiểm tra chúng không được thêm vào lựa chọn. Bottom Sheet hiện ghế đang xem, số ghế/chỗ và tổng tiền. Bấm Xem ghế để mở danh sách, bấm dòng ghế để định vị, bấm Xóa để bỏ chọn.
 5. Xoay dọc/ngang để kiểm tra bố cục và lựa chọn. ViewModel giữ lựa chọn khi Activity được tạo lại do xoay, còn camera hiện được tính lại về góc toàn phòng. Ca nghiệm thu xoay đầy đủ đang chờ.
 
 Dự án được tạo với Kotlin/Views, Gradle Wrapper 9.6.0, AGP 9.4.1, Gradle JDK 25, compile/target SDK 37 và min SDK 26. Kiểm tra dòng lệnh từ thư mục `CinemaMap/` bằng `./gradlew --offline :app:assembleDebug :app:testDebugUnitTest` khi đã có cache. `CinemaMap/` là gốc dự án Android và repo Git.
 
 ## Tiến độ hiện tại
 
-Mốc mã nguồn đang đối chiếu là `915b1a7`. Checklist và phạm vi nghiệm thu chi tiết nằm trong [tài liệu nghiệm thu](docs/05-nghiem-thu.md#checklist-còn-lại).
+Bảng tiến độ phản ánh mã nguồn hiện tại trong workspace. Checklist và phạm vi nghiệm thu chi tiết nằm trong [tài liệu nghiệm thu](docs/05-nghiem-thu.md#checklist-còn-lại).
 
 | Hạng mục | Trạng thái |
 | --- | --- |
@@ -25,8 +25,9 @@ Mốc mã nguồn đang đối chiếu là `915b1a7`. Checklist và phạm vi ng
 | ViewModel, chọn/bỏ chọn và phản hồi trên Canvas | Đã triển khai. Unit test bao phủ phần logic T02 với ba loại ghế và ghế đã đặt |
 | Số ghế, số chỗ, tổng tiền và ghế đang xem | Đã có trong BookingUiState. Đã hiển thị trong phần tóm tắt của Bottom Sheet |
 | Bottom Sheet và định vị ghế | Đã có hai nấc, danh sách cuộn, định vị và xóa từng ghế. Có kiểm thử tích hợp trên Pixel_7 |
-| Chú thích | Đã có thanh ngang phía trên Sheet và nút Chi tiết giải thích màu/ký hiệu |
+| Chú thích | Đã có thanh ngang phía trên Sheet với mẫu bo góc, nút Chi tiết giải thích màu; trạng thái ghế không dùng ký hiệu |
 | Bộ lọc | Đã có loại và trạng thái kết hợp AND, số kết quả, Xóa lọc và thông báo rỗng. Ghế lệch lọc mờ/khóa chạm, Sheet giữ lựa chọn với nhãn ngoài lọc |
+| Bố cục và điều hướng | Đã có bố cục ngang hai vùng Canvas/danh sách, nút Toàn phòng gọn, mã ghế khi zoom, màu ghế chung và minimap cùng Canvas |
 | Xoay màn hình và phục hồi | Lựa chọn được giữ bằng ViewModel khi xoay. Còn kiểm chứng đầy đủ, giữ camera và bổ sung SavedStateHandle |
 | Kiểm thử tổng thể và hồ sơ nộp | Đang thực hiện. Còn đo hiệu năng, clone sạch, video và kiểm tra quyền truy cập liên kết |
 
@@ -73,6 +74,8 @@ Chia commit theo phần thay đổi có ý nghĩa và nhịp làm thực tế. T
 | 2026-11-27 | Codex triển khai Bottom Sheet hai nấc và nối với state hiện có | MainActivity, layout, SelectedSeatAdapter, locateSeat và kiểm thử BookingSheetTest | Build/unit test đã qua. Hai ca tích hợp trên Pixel_7 kiểm tra tổng tiền, xóa/định vị, dựng lại Activity và vùng map/danh sách cuộn ở hướng ngang. Bộ lọc và khôi phục sau khi hệ thống hủy tiến trình còn chờ. |
 | 2026-11-27 | Codex triển khai Legend trực tiếp theo tham khảo UX của sinh viên | view_seat_legend.xml, item_seat_legend.xml, setupLegend, màu dùng chung và BookingSheetTest | Build/unit test và ba ca thiết bị đã qua, gồm vùng nhìn dọc/ngang và mở/đóng Chi tiết giữ lựa chọn. Cỡ chữ lớn và bộ lọc cần kiểm tra thêm. |
 | 2026-11-27 | Codex triển khai lọc loại/trạng thái và đồng bộ Canvas–Sheet | SeatFilter, state/ViewModel, Activity, Canvas, adapter, layout và kiểm thử | Build, 3 ca unit test bộ lọc và 4 ca tích hợp Sheet trên Pixel_7 đã qua. Xác nhận AND, rỗng, xóa lọc giữ lựa chọn, cập nhật trạng thái sau chọn, nhãn ngoài lọc, Reset View và dựng lại Activity. Ca chữ lớn và hủy tiến trình còn chờ. |
+| 2026-11-27 | Codex tối ưu bố cục dọc/ngang và điều hướng theo ảnh tham khảo | Layout ngang, layout Sheet dùng chung, Canvas/minimap, màu, legend và MapNavigationTest | Build/unit test và 6 ca thiết bị đã qua. Đã xem ảnh ngang để xác minh vùng Canvas. Cỡ chữ lớn còn chờ kiểm tra. Góc nhìn 3D được ghi là ý tưởng mở rộng. |
+| 2026-11-27 | Codex đồng bộ mẫu chú thích bo góc và chuyển trạng thái ghế sang màu theo yêu cầu sinh viên | MainActivity, CinemaMapView, màu, chuỗi và tài liệu UI | Build và unit test đã qua trước khi commit bản UI/UX. Chưa áp dụng các bảng màu tham khảo; sinh viên chọn bảng màu và kiểm tra trực tiếp sau. |
 
 Khi triển khai, bổ sung hướng dẫn chạy theo môi trường đã kiểm chứng, kiến trúc mã nguồn thực tế, tổ chức dữ liệu, công thức đổi tọa độ, hit-testing, quản lý trạng thái, tối ưu hiệu năng và liên kết video. Cập nhật nhật ký sau mỗi phiên sử dụng AI theo [quy chuẩn ghi chép](docs/04-quy-chuan.md).
 

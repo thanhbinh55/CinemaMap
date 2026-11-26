@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.util.Log
 import android.view.GestureDetector
@@ -27,11 +28,12 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         color = Color.rgb(24, 26, 42)
         textAlign = Paint.Align.CENTER
     }
-    private val background = Color.rgb(247, 244, 237)
+    private val background = Color.rgb(248, 250, 252)
     private val screenColor = context.getColor(R.color.seat_accent)
     private val standardColor = context.getColor(R.color.seat_standard)
     private val vipColor = context.getColor(R.color.seat_vip)
     private val coupleColor = context.getColor(R.color.seat_couple)
+    private val unavailableColor = context.getColor(R.color.seat_unavailable)
     private val occupiedColor = context.getColor(R.color.seat_occupied)
     private val outlineColor = context.getColor(R.color.seat_outline)
     private val screenLabel = resources.getString(R.string.screen_label)
@@ -59,6 +61,14 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
             }
         }
 
+    private val miniBounds = RectF()
+    private val miniViewport = RectF()
+    private val miniPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val seatLabelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        textAlign = Paint.Align.CENTER
+        textSize = 12f
+        isFakeBoldText = true
+    }
     private var locatedSeatId: String? = null
     private var camera: CameraTransform? = null
     private var fitCamera: CameraTransform? = null
@@ -86,6 +96,11 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
 
             override fun onSingleTapUp(event: MotionEvent): Boolean {
                 if (hadMultiplePointers) return false
+                if (miniBounds.contains(event.x, event.y)) {
+                    resetView()
+                    performClick()
+                    return true
+                }
                 val transform = camera ?: return false
                 val point = transform.viewToWorld(event.x, event.y)
                 val hit = geometry.findSeatAt(point)
@@ -266,10 +281,12 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
     }
 
     private fun limitOffset(offset: Float, viewportSize: Float, mapSize: Float): Float {
+        val margin = viewportSize * 0.15f
         return if (mapSize <= viewportSize) {
-            (viewportSize - mapSize) / 2f
+            val centered = (viewportSize - mapSize) / 2f
+            offset.coerceIn(centered - margin, centered + margin)
         } else {
-            offset.coerceIn(viewportSize - mapSize, 0f)
+            offset.coerceIn(viewportSize - mapSize - margin, margin)
         }
     }
 
@@ -299,6 +316,7 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
             previousType = row.type
         }
         canvas.restoreToCount(checkpoint)
+        drawMiniMap(canvas, transform)
     }
 
     private fun drawScreen(canvas: Canvas) {
@@ -309,6 +327,18 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         canvas.drawText(screenLabel, geometry.centerX, 58f, textPaint)
     }
 
+    private fun seatColor(position: SeatPosition): Int {
+        val seat = position.seat
+        return when {
+            seat.id in selectedSeatIds -> screenColor
+            seat.availability == SeatAvailability.BOOKED -> occupiedColor
+            seat.availability == SeatAvailability.UNAVAILABLE -> unavailableColor
+            seat.type == SeatType.VIP -> vipColor
+            seat.type == SeatType.COUPLE -> coupleColor
+            else -> standardColor
+        }
+    }
+
     private fun drawSeat(canvas: Canvas, position: SeatPosition, alpha: Int) {
         val left = position.left
         val top = position.top
@@ -317,72 +347,84 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         val middleX = (left + right) / 2f
         val middleY = (top + bottom) / 2f
         val seat = position.seat
-        val isSelected = seat.id in selectedSeatIds
+        val selected = seat.id in selectedSeatIds
+        val showCode = (camera?.scale ?: 0f) * position.width >= 30f * resources.displayMetrics.density
+
+        paint.style = Paint.Style.FILL
+        paint.color = seatColor(position)
+        paint.alpha = alpha
+        canvas.drawRoundRect(left, top, right, bottom, 4f, 4f, paint)
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = if (selected) 2.5f else 1f
+        paint.color = if (selected) screenColor else outlineColor
+        paint.alpha = alpha
+        canvas.drawRoundRect(left + 1f, top + 1f, right - 1f, bottom - 1f, 4f, 4f, paint)
+
         if (seat.id == locatedSeatId) {
-            paint.style = Paint.Style.STROKE
-            paint.strokeWidth = 3f
             paint.color = screenColor
+            paint.strokeWidth = 3f
             canvas.drawCircle(middleX, middleY, position.width / 2f + 6f, paint)
         }
 
-        // 1. Vẽ nền ghế
-        paint.style = Paint.Style.FILL
-        paint.color = if (seat.availability == SeatAvailability.AVAILABLE) {
-            when (seat.type) {
-                SeatType.STANDARD -> standardColor
-                SeatType.VIP -> vipColor
-                SeatType.COUPLE -> coupleColor
-            }
+        seatLabelPaint.color = if (selected || seat.availability == SeatAvailability.BOOKED) {
+            Color.WHITE
         } else {
-            occupiedColor
+            outlineColor
         }
-        paint.alpha = alpha
-        canvas.drawRect(left, top, right, bottom, paint)
-
-        // 2. Vẽ viền và dấu trạng thái ĐANG CHỌN (nếu được chọn)
-        paint.style = Paint.Style.STROKE
-        if (isSelected) {
-            paint.strokeWidth = 3f
-            paint.color = screenColor // Màu chàm nổi bật
-            paint.alpha = alpha
-            canvas.drawRect(left + 1f, top + 1f, right - 1f, bottom - 1f, paint)
-
-            // Vẽ dấu tick ✓
-            paint.strokeWidth = 2.5f
-            canvas.drawLine(middleX - 5f, middleY, middleX - 1f, middleY + 5f, paint)
-            canvas.drawLine(middleX - 1f, middleY + 5f, middleX + 6f, middleY - 5f, paint)
-        } else {
-            paint.strokeWidth = 2f
-            paint.color = outlineColor
-            paint.alpha = alpha
-            canvas.drawRect(left + 1f, top + 1f, right - 1f, bottom - 1f, paint)
-        }
-
-        // 3. Vạch chia giữa cho ghế đôi
-        if (seat.type == SeatType.COUPLE && !isSelected) {
-            paint.strokeWidth = 2f
-            paint.color = outlineColor
-            paint.alpha = alpha
-            canvas.drawLine(middleX, top + 2f, middleX, bottom - 2f, paint)
-        }
-
-        // 4. Ký hiệu ghế đã đặt hoặc hỏng
-        when (seat.availability) {
-            SeatAvailability.BOOKED -> {
-                paint.strokeWidth = 2f
-                paint.color = outlineColor
-                paint.alpha = alpha
-                canvas.drawLine(middleX - 7f, middleY, middleX + 7f, middleY, paint)
-            }
-            SeatAvailability.UNAVAILABLE -> {
-                paint.strokeWidth = 2f
-                paint.color = outlineColor
-                paint.alpha = alpha
-                canvas.drawLine(middleX - 5f, middleY - 5f, middleX + 5f, middleY + 5f, paint)
-                canvas.drawLine(middleX - 5f, middleY + 5f, middleX + 5f, middleY - 5f, paint)
-            }
-            SeatAvailability.AVAILABLE -> Unit
+        seatLabelPaint.alpha = alpha
+        if (showCode) {
+            canvas.drawText(seat.id, middleX, middleY + 4f, seatLabelPaint)
         }
         paint.alpha = 255
+    }
+
+    private fun drawMiniMap(canvas: Canvas, transform: CameraTransform) {
+        val fit = fitCamera ?: return
+        val moved = kotlin.math.abs(transform.offsetX - fit.offsetX) > 1f ||
+            kotlin.math.abs(transform.offsetY - fit.offsetY) > 1f
+        if (transform.scale <= fit.scale * 1.05f && !moved) {
+            miniBounds.setEmpty()
+            return
+        }
+        val density = resources.displayMetrics.density
+        val miniWidth = minOf(112f * density, width * 0.25f)
+        val miniScale = (miniWidth - 12f * density) / geometry.width
+        if (miniScale <= 0f) return
+        val miniHeight = geometry.height * miniScale + 12f * density
+        val margin = 8f * density
+        miniBounds.set(width - margin - miniWidth, margin, width - margin, margin + miniHeight)
+        miniPaint.style = Paint.Style.FILL
+        miniPaint.color = Color.rgb(15, 23, 42)
+        canvas.drawRoundRect(miniBounds, 8f * density, 8f * density, miniPaint)
+        val originX = miniBounds.left + 6f * density
+        val originY = miniBounds.top + 6f * density
+        val saved = canvas.save()
+        canvas.translate(originX, originY)
+        canvas.scale(miniScale, miniScale)
+        canvas.clipRect(0f, 0f, geometry.width, geometry.height)
+        miniPaint.strokeWidth = 5f
+        miniPaint.color = Color.WHITE
+        canvas.drawLine(geometry.centerX - 214f, 25f, geometry.centerX + 214f, 25f, miniPaint)
+        for (row in geometry.rows) {
+            for (position in row.seats) {
+                miniPaint.style = Paint.Style.FILL
+                miniPaint.color = seatColor(position)
+                miniPaint.alpha = if (matchingSeatIds?.contains(position.seat.id) != false) 255 else 65
+                canvas.drawRect(position.left, position.top, position.left + position.width,
+                    position.top + geometry.seatHeight, miniPaint)
+            }
+        }
+        val topLeft = transform.viewToWorld(0f, 0f)
+        val bottomRight = transform.viewToWorld(width.toFloat(), height.toFloat())
+        miniViewport.set(
+            topLeft.x.coerceIn(0f, geometry.width), topLeft.y.coerceIn(0f, geometry.height),
+            bottomRight.x.coerceIn(0f, geometry.width), bottomRight.y.coerceIn(0f, geometry.height)
+        )
+        miniPaint.alpha = 255
+        miniPaint.style = Paint.Style.STROKE
+        miniPaint.color = Color.rgb(250, 204, 21)
+        miniPaint.strokeWidth = 2f * density / miniScale
+        canvas.drawRect(miniViewport, miniPaint)
+        canvas.restoreToCount(saved)
     }
 }

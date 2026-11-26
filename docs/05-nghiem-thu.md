@@ -47,13 +47,17 @@ Unit test hiện có bao phủ phần logic T02: A05 + E08 + K03 cho 3 ghế, 4 
 - [ ] Nhóm F. Hoàn thành các ca tích hợp, lưu minh chứng, đo độ mượt và chạy build/test/lint từ bản clone sạch.
 - [ ] Nhóm G. Cập nhật README và nhật ký AI theo bản thực tế, đối chiếu lịch sử Git theo đề, quay video 1–5 phút và kiểm tra quyền truy cập repo/video.
 
+## Kiểm tra bố cục và điều hướng ngày 27/11/2026
+
+Build/unit test đã qua. Sáu ca trong BookingSheetTest và MapNavigationTest trên Pixel_7 đã qua, gồm Sheet dọc/ngang, danh sách ngoài bộ lọc, dựng lại Activity, Legend, pan ở mức fit và phạm vi minimap. Đã xem ảnh landscape lúc định vị ghế để xác minh Canvas có vùng riêng phía trái ngay khi Sheet mở bên phải. Còn kiểm tra chữ lớn, thiết bị kích thước khác, giữ camera qua xoay Activity và toàn bộ biên hit-testing.
+
 ## Ca nghiệm thu
 
 | Ca | Yêu cầu | Thực hiện và kết quả kỳ vọng | Minh chứng dự kiến |
 | --- | --- | --- | --- |
 | T01 | R01, R13 | Start dọc và ngang, fit đủ 196 ghế/212 chỗ, 72 Thường/108 VIP/16 Đôi, ID duy nhất, màn chiếu và lối đi rõ, một Custom View cho toàn sơ đồ. Kiểm tra màn nhỏ và hai nấc Sheet. | Unit test fixture, Layout Inspector, ảnh dọc/ngang |
 | T02 | R02, R05, R09, R12 | Chọn A05, E08, K03. Sheet hiện 3 ghế, 4 chỗ, 385.000 đ. Bỏ E08 còn 2 ghế, 3 chỗ, 275.000 đ; E08 về Trống, các mục khác giữ nguyên. Chạm A03 Đã đặt và B01 Không khả dụng, chỉ hiện chi tiết. | Test ViewModel và video |
-| T03 | R03, R13 | Ở mức 3× fit, kéo qua bốn biên và góc, viewport không mất toàn sơ đồ. Fit lại, trục dư vùng nhìn căn giữa. Thử kéo rồi thả và kiểm tra không sinh lựa chọn. | Unit test giới hạn và demo |
+| T03 | R03, R13 | Ở mức 3× fit, kéo qua bốn biên và góc, viewport không mất toàn sơ đồ. Reset về fit căn giữa; kéo ở fit được lệch trong khoảng đệm 15% viewport. Thử kéo rồi thả và kiểm tra không sinh lựa chọn. | Unit test giới hạn và demo |
 | T04 | R04, R13 | Pinch ở vị trí lệch tâm theo nhiều hướng, gồm dịch tâm hai ngón, theo dõi đúng điểm neo ở trường hợp không chạm giới hạn. Kiểm tra min/max, nhấc một ngón rồi kéo tiếp, hoàn tất mà không phát tap. | Test phép toán và thao tác hai ngón |
 | T05 | R05, R13 | Round-trip một số điểm world qua transform. Kiểm tra tap chính giữa và sát trong/ngoài từng cạnh, ở khe ghế, lối giữa và trên ghế đôi ở mặc định, sau pan, sau zoom, sau kết hợp pan+zoom, sau xoay. Vùng dưới mép Sheet không nhận tap bản đồ. | Unit test tham số hóa và kiểm tra trên thiết bị |
 | T06 | R08, R12 | Đang zoom/pan và giữ lựa chọn + bộ lọc, bấm Toàn phòng. Camera về fit mượt, lựa chọn, giá, bộ lọc và nấc Sheet giữ nguyên. Chạm hoặc kéo khi đang reset để xác nhận camera tiếp nhận điều khiển ổn định. | Video và kiểm thử UI |

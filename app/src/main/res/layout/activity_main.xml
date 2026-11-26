@@ -5,20 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/reset_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="12dp"
-        android:text="@string/reset_view"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
     <include
         layout="@layout/view_seat_filters"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/reset_view"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -37,76 +28,18 @@
             android:layout_height="match_parent" />
 
         <include layout="@layout/view_seat_legend" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/reset_view"
+            style="?attr/materialIconButtonOutlinedStyle"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="top|start"
+            android:layout_margin="8dp"
+            android:contentDescription="@string/reset_view"
+            android:tooltipText="@string/reset_view"
+            app:icon="@drawable/ic_fit_room"
+            app:iconPadding="0dp" />
 
-        <LinearLayout
-            android:id="@+id/booking_sheet"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:background="?attr/colorSurface"
-            android:elevation="8dp"
-            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-            app:behavior_hideable="false"
-            app:behavior_fitToContents="true">
-
-            <LinearLayout
-                android:id="@+id/sheet_header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="16dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="8dp"
-                    android:text="@string/mock_showtime"
-                    android:textSize="13sp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-                    <TextView
-                        android:id="@+id/booking_summary"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/toggle_sheet"
-                        style="?attr/borderlessButtonStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/expand_sheet" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/inspected_seat"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="8dp"
-                    android:maxLines="2"
-                    android:ellipsize="end"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/empty_selection"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:text="@string/empty_selection" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/selected_seats"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:clipToPadding="false"
-                android:paddingBottom="8dp" />
-        </LinearLayout>
+        <include layout="@layout/view_booking_sheet" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
