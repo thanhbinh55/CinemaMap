@@ -19,6 +19,61 @@ import vn.edu.midterm.cinemamap.ui.BookingViewModel
 @RunWith(AndroidJUnit4::class)
 class BookingSheetTest {
     @Test
+    fun filtersKeepSelectedSeatsInSheetAndSurviveResetAndRecreation() {
+        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+            scenario.onActivity { activity ->
+                ViewModelProvider(activity)[BookingViewModel::class.java]
+                    .onSeatTapped(MockCinemaData.rows.first().seats.first())
+            }
+            androidx.test.espresso.Espresso.onView(
+                androidx.test.espresso.matcher.ViewMatchers.withId(R.id.filter_type)
+            ).perform(androidx.test.espresso.action.ViewActions.click())
+            androidx.test.espresso.Espresso.onView(
+                androidx.test.espresso.matcher.ViewMatchers.withText(R.string.seat_vip)
+            ).inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog())
+                .perform(androidx.test.espresso.action.ViewActions.click())
+            scenario.onActivity { activity ->
+                assertTrue(activity.findViewById<TextView>(R.id.filter_result).text.contains("108"))
+                val map = activity.findViewById<CinemaMapView>(R.id.cinema_map)
+                assertFalse(map.matchingSeatIds!!.contains("A01"))
+                assertEquals(setOf("A01"), map.selectedSeatIds)
+                activity.findViewById<View>(R.id.reset_view).performClick()
+                activity.findViewById<View>(R.id.toggle_sheet).performClick()
+            }
+            SystemClock.sleep(600)
+            scenario.onActivity { activity ->
+                val list = activity.findViewById<RecyclerView>(R.id.selected_seats)
+                val row = list.findViewHolderForAdapterPosition(0)!!.itemView
+                assertTrue(row.findViewById<TextView>(R.id.locate_seat).text.contains("Ngoài bộ lọc"))
+                row.findViewById<View>(R.id.locate_seat).performClick()
+                assertEquals(vn.edu.midterm.cinemamap.model.SeatType.VIP,
+                    ViewModelProvider(activity)[BookingViewModel::class.java].uiState.value.filter.type)
+            }
+            scenario.recreate()
+            SystemClock.sleep(400)
+            scenario.onActivity { activity ->
+                val map = activity.findViewById<CinemaMapView>(R.id.cinema_map)
+                assertEquals(setOf("A01"), map.selectedSeatIds)
+                assertEquals(108, map.matchingSeatIds!!.size)
+                val model = ViewModelProvider(activity)[BookingViewModel::class.java]
+                model.setTypeFilter(vn.edu.midterm.cinemamap.model.SeatType.COUPLE)
+                model.setStatusFilter(vn.edu.midterm.cinemamap.ui.SeatStatusFilter.SELECTED)
+            }
+            SystemClock.sleep(150)
+            scenario.onActivity { activity ->
+                assertEquals(activity.getString(R.string.filter_empty),
+                    activity.findViewById<TextView>(R.id.filter_result).text.toString())
+                activity.findViewById<View>(R.id.clear_filters).performClick()
+            }
+            SystemClock.sleep(150)
+            scenario.onActivity { activity ->
+                assertEquals(196, activity.findViewById<CinemaMapView>(R.id.cinema_map).matchingSeatIds!!.size)
+                assertEquals(setOf("A01"), activity.findViewById<CinemaMapView>(R.id.cinema_map).selectedSeatIds)
+            }
+        }
+    }
+
+    @Test
     fun expandedSheetLeavesMapUsableInLandscape() {
         ActivityScenario.launch(MainActivity::class.java).use { scenario ->
             scenario.onActivity { it.requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE }

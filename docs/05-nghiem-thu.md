@@ -20,7 +20,7 @@ Ví dụ khi học nhóm C, sinh viên có thể yêu cầu giải thích hệ t
 
 Bản hiện tại có sơ đồ 196 ghế, camera vừa phòng khi mở, pinch trong khoảng 0,8×–5×, kéo bằng một ngón và kéo tiếp bằng ngón còn lại sau pinch. Hit-testing đổi tọa độ chạm về sơ đồ và ghi mã ghế vào Logcat. Nút Toàn phòng đưa camera về góc vừa phòng bằng hiệu ứng 220 ms. Khi chạm vào sơ đồ, hiệu ứng dừng ở vị trí đang hiển thị. Build và unit test của template đã qua. Phép thử tạm trên Pixel_7 xác nhận pinch tăng tỷ lệ và pan ngang theo cả hai hướng, kể cả sau khi nhấc một ngón.
 
-Mốc mã nguồn đối chiếu là `915b1a7`. Đã nối `onSeatClickListener` → `BookingViewModel.onSeatTapped()` → `StateFlow` → `CinemaMapView.selectedSeatIds`. Ghế chọn có viền chàm và dấu ✓, ghế đã đặt/không khả dụng được chặn chọn. State chứa ghế đang xem, số ghế, số chỗ và tổng tiền. `removeSeat()` và `clearSelection()` đã có trong ViewModel, còn chờ UI sử dụng. Bottom Sheet đã có hai nấc, tóm tắt và danh sách cuộn. Dòng ghế gọi định vị và vẽ vòng đánh dấu, nút Xóa gửi sự kiện về ViewModel. Thanh chú thích đã có phía trên Sheet, cuộn ngang và mở Chi tiết. Bộ lọc đang chờ triển khai.
+Mốc mã nguồn đối chiếu là `915b1a7`. Đã nối `onSeatClickListener` → `BookingViewModel.onSeatTapped()` → `StateFlow` → `CinemaMapView.selectedSeatIds`. Ghế chọn có viền chàm và dấu ✓, ghế đã đặt/không khả dụng được chặn chọn. State chứa ghế đang xem, số ghế, số chỗ và tổng tiền. `removeSeat()` và `clearSelection()` đã có trong ViewModel, còn chờ UI sử dụng. Bottom Sheet đã có hai nấc, tóm tắt và danh sách cuộn. Dòng ghế gọi định vị và vẽ vòng đánh dấu, nút Xóa gửi sự kiện về ViewModel. Thanh chú thích đã có phía trên Sheet, cuộn ngang và mở Chi tiết. Bộ lọc loại và trạng thái đã triển khai với AND, số kết quả, điều kiện trên nút và Xóa lọc. Các ghế lệch điều kiện mờ và không nhận chạm, lựa chọn vẫn nằm trong Sheet với nhãn ngoài bộ lọc.
 
 Unit test hiện có bao phủ phần logic T02: A05 + E08 + K03 cho 3 ghế, 4 chỗ, 385.000 đ; bỏ E08 còn 275.000 đ; chạm A03 đã đặt chỉ cập nhật ghế đang xem. Còn chờ kiểm tra riêng ghế không khả dụng và phần hiển thị của T02. ViewModel giữ lựa chọn khi xoay theo cơ chế hiện tại, còn camera trở về toàn phòng. SavedStateHandle và kiểm thử phục hồi đầy đủ đang chờ.
 
@@ -42,7 +42,8 @@ Unit test hiện có bao phủ phần logic T02: A05 + E08 + K03 cho 3 ghế, 4 
 - [x] Nhóm D. Thêm thông tin suất giả lập và Bottom Sheet hai nấc có danh sách cuộn, hiện tóm tắt, giá và trạng thái ghế đang xem. Nối xóa từng ghế và định vị trên Canvas.
 - [ ] Hoàn tất nghiệm thu nhóm D với thao tác trực tiếp trên Sheet và khi áp dụng bộ lọc.
 - [x] Nhóm E. Thêm thanh chú thích và bảng giải thích Chi tiết.
-- [ ] Nhóm E. Thêm bộ lọc, có điều kiện đang áp dụng, thao tác xóa và kết quả rỗng. Giữ trạng thái lựa chọn, bộ lọc và Sheet khi xoay. Xác minh bố cục ở cả hai hướng.
+- [x] Nhóm E. Thêm bộ lọc, điều kiện hiện hành, số kết quả, thao tác xóa và kết quả rỗng. Unit test bộ lọc và ca tích hợp Sheet giữ lựa chọn sau Reset View/dựng lại Activity đã qua.
+- [ ] Nhóm E. Hoàn tất kiểm tra xoay thực tế với lựa chọn, bộ lọc, Sheet và camera ở cả hai hướng.
 - [ ] Nhóm F. Hoàn thành các ca tích hợp, lưu minh chứng, đo độ mượt và chạy build/test/lint từ bản clone sạch.
 - [ ] Nhóm G. Cập nhật README và nhật ký AI theo bản thực tế, đối chiếu lịch sử Git theo đề, quay video 1–5 phút và kiểm tra quyền truy cập repo/video.
 

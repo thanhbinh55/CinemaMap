@@ -51,6 +51,14 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
                 invalidate()
             }
         }
+    var matchingSeatIds: Set<String>? = null
+        set(value) {
+            if (field != value) {
+                field = value
+                invalidate()
+            }
+        }
+
     private var locatedSeatId: String? = null
     private var camera: CameraTransform? = null
     private var fitCamera: CameraTransform? = null
@@ -83,7 +91,7 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
                 val hit = geometry.findSeatAt(point)
 
                 Log.d("CinemaMap", hit?.seat?.id ?: "Không trúng ghế")
-                if (hit != null) {
+                if (hit != null && matchingSeatIds?.contains(hit.seat.id) != false) {
                     onSeatClickListener?.invoke(hit.seat)
                 }
                 performClick()
@@ -284,7 +292,9 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
             textPaint.textSize = 19f
             canvas.drawText(row.label, 17f, row.top + 23f, textPaint)
             for (position in row.seats) {
-                drawSeat(canvas, position)
+                val matching = matchingSeatIds?.contains(position.seat.id) != false
+                val alpha = if (matching) 255 else 55
+                drawSeat(canvas, position, alpha)
             }
             previousType = row.type
         }
@@ -299,7 +309,7 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         canvas.drawText(screenLabel, geometry.centerX, 58f, textPaint)
     }
 
-    private fun drawSeat(canvas: Canvas, position: SeatPosition) {
+    private fun drawSeat(canvas: Canvas, position: SeatPosition, alpha: Int) {
         val left = position.left
         val top = position.top
         val right = left + position.width
@@ -326,6 +336,7 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         } else {
             occupiedColor
         }
+        paint.alpha = alpha
         canvas.drawRect(left, top, right, bottom, paint)
 
         // 2. Vẽ viền và dấu trạng thái ĐANG CHỌN (nếu được chọn)
@@ -333,6 +344,7 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         if (isSelected) {
             paint.strokeWidth = 3f
             paint.color = screenColor // Màu chàm nổi bật
+            paint.alpha = alpha
             canvas.drawRect(left + 1f, top + 1f, right - 1f, bottom - 1f, paint)
 
             // Vẽ dấu tick ✓
@@ -342,6 +354,7 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         } else {
             paint.strokeWidth = 2f
             paint.color = outlineColor
+            paint.alpha = alpha
             canvas.drawRect(left + 1f, top + 1f, right - 1f, bottom - 1f, paint)
         }
 
@@ -349,6 +362,7 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         if (seat.type == SeatType.COUPLE && !isSelected) {
             paint.strokeWidth = 2f
             paint.color = outlineColor
+            paint.alpha = alpha
             canvas.drawLine(middleX, top + 2f, middleX, bottom - 2f, paint)
         }
 
@@ -357,15 +371,18 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
             SeatAvailability.BOOKED -> {
                 paint.strokeWidth = 2f
                 paint.color = outlineColor
+                paint.alpha = alpha
                 canvas.drawLine(middleX - 7f, middleY, middleX + 7f, middleY, paint)
             }
             SeatAvailability.UNAVAILABLE -> {
                 paint.strokeWidth = 2f
                 paint.color = outlineColor
+                paint.alpha = alpha
                 canvas.drawLine(middleX - 5f, middleY - 5f, middleX + 5f, middleY + 5f, paint)
                 canvas.drawLine(middleX - 5f, middleY + 5f, middleX + 5f, middleY - 5f, paint)
             }
             SeatAvailability.AVAILABLE -> Unit
         }
+        paint.alpha = 255
     }
 }

@@ -24,7 +24,11 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import vn.edu.midterm.cinemamap.map.CinemaMapView
+import vn.edu.midterm.cinemamap.data.MockCinemaData
+import vn.edu.midterm.cinemamap.model.SeatType
 import vn.edu.midterm.cinemamap.model.SeatAvailability
+import vn.edu.midterm.cinemamap.ui.SelectedSeatItem
+import vn.edu.midterm.cinemamap.ui.SeatStatusFilter
 import vn.edu.midterm.cinemamap.ui.BookingViewModel
 import vn.edu.midterm.cinemamap.ui.SelectedSeatAdapter
 import vn.edu.midterm.cinemamap.ui.typeLabelResource
@@ -46,12 +50,18 @@ class MainActivity : AppCompatActivity() {
         val header = findViewById<View>(R.id.sheet_header)
         val legend = findViewById<View>(R.id.seat_legend)
         setupLegend()
+        setupFilters()
         val behavior = BottomSheetBehavior.from(sheet)
         val toggle = findViewById<MaterialButton>(R.id.toggle_sheet)
         val summary = findViewById<TextView>(R.id.booking_summary)
         val inspected = findViewById<TextView>(R.id.inspected_seat)
         val empty = findViewById<View>(R.id.empty_selection)
         val list = findViewById<RecyclerView>(R.id.selected_seats)
+        val typeFilter = findViewById<MaterialButton>(R.id.filter_type)
+        val statusFilter = findViewById<MaterialButton>(R.id.filter_status)
+        val clearFilters = findViewById<View>(R.id.clear_filters)
+        val result = findViewById<TextView>(R.id.filter_result)
+        val allSeats = MockCinemaData.rows.flatMap { it.seats }
         val money = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("vi-VN"))
         val adapter = SelectedSeatAdapter(
             onLocate = { seat -> cinemaMap.locateSeat(seat.id) },
@@ -119,12 +129,23 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    cinemaMap.selectedSeatIds = state.selectedSeats.map { it.id }.toSet()
+                    val selectedIds = state.selectedSeats.map { it.id }.toSet()
+                    val matchingIds = allSeats.filter { state.filter.matches(it, it.id in selectedIds) }
+                        .map { it.id }.toSet()
+                    cinemaMap.selectedSeatIds = selectedIds
+                    cinemaMap.matchingSeatIds = matchingIds
+                    typeFilter.text = getString(R.string.filter_type, getString(typeLabel(state.filter.type)))
+                    statusFilter.text = getString(R.string.filter_status, getString(statusLabel(state.filter.status)))
+                    clearFilters.isEnabled = state.filter.isActive
+                    result.text = if (matchingIds.isEmpty()) getString(R.string.filter_empty)
+                        else getString(R.string.filter_result, matchingIds.size, allSeats.size)
                     summary.text = getString(
                         R.string.selection_summary, state.totalSeatsCount, state.totalSpotsCount,
                         money.format(state.totalPriceVnd)
                     )
-                    adapter.submitList(state.selectedSeats)
+                    adapter.submitList(state.selectedSeats.map { seat ->
+                        SelectedSeatItem(seat, seat.id !in matchingIds)
+                    })
                     empty.isVisible = state.selectedSeats.isEmpty()
                     val seat = state.inspectedSeat
                     inspected.text = if (seat == null) {
@@ -136,10 +157,12 @@ class MainActivity : AppCompatActivity() {
                             seat.availability == SeatAvailability.UNAVAILABLE -> R.string.seat_unavailable
                             else -> R.string.seat_available
                         }
-                        getString(
+                        val description = getString(
                             R.string.inspected_seat, seat.id,
                             getString(seat.typeLabelResource()), getString(status)
                         )
+                        if (seat.id !in matchingIds) description + getString(R.string.outside_filter_suffix)
+                        else description
                     }
                 }
             }
@@ -150,6 +173,49 @@ class MainActivity : AppCompatActivity() {
             insets
         }
     }
+    private fun typeLabel(type: SeatType?): Int = when (type) {
+        null -> R.string.filter_all
+        SeatType.STANDARD -> R.string.seat_standard
+        SeatType.VIP -> R.string.seat_vip
+        SeatType.COUPLE -> R.string.seat_couple
+    }
+
+    private fun statusLabel(status: SeatStatusFilter?): Int = when (status) {
+        null -> R.string.filter_all
+        SeatStatusFilter.AVAILABLE -> R.string.seat_available
+        SeatStatusFilter.SELECTED -> R.string.seat_selected
+        SeatStatusFilter.BOOKED -> R.string.seat_booked
+        SeatStatusFilter.UNAVAILABLE -> R.string.seat_unavailable
+    }
+
+    private fun setupFilters() {
+        findViewById<View>(R.id.filter_type).setOnClickListener {
+            val options = listOf(null, SeatType.STANDARD, SeatType.VIP, SeatType.COUPLE)
+            val labels = options.map { getString(typeLabel(it)) }.toTypedArray()
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.filter_type_title)
+                .setSingleChoiceItems(labels, options.indexOf(viewModel.uiState.value.filter.type)) { dialog, which ->
+                    viewModel.setTypeFilter(options[which])
+                    dialog.dismiss()
+                }
+                .setNegativeButton(R.string.legend_close, null)
+                .show()
+        }
+        findViewById<View>(R.id.filter_status).setOnClickListener {
+            val options = listOf(null) + SeatStatusFilter.values().toList()
+            val labels = options.map { getString(statusLabel(it)) }.toTypedArray()
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.filter_status_title)
+                .setSingleChoiceItems(labels, options.indexOf(viewModel.uiState.value.filter.status)) { dialog, which ->
+                    viewModel.setStatusFilter(options[which])
+                    dialog.dismiss()
+                }
+                .setNegativeButton(R.string.legend_close, null)
+                .show()
+        }
+        findViewById<View>(R.id.clear_filters).setOnClickListener { viewModel.clearFilters() }
+    }
+
     private fun setupLegend() {
         val items = findViewById<LinearLayout>(R.id.legend_items)
         val density = resources.displayMetrics.density

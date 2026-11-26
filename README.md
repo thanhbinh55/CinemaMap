@@ -26,11 +26,11 @@ Mốc mã nguồn đang đối chiếu là `915b1a7`. Checklist và phạm vi ng
 | Số ghế, số chỗ, tổng tiền và ghế đang xem | Đã có trong BookingUiState. Đã hiển thị trong phần tóm tắt của Bottom Sheet |
 | Bottom Sheet và định vị ghế | Đã có hai nấc, danh sách cuộn, định vị và xóa từng ghế. Có kiểm thử tích hợp trên Pixel_7 |
 | Chú thích | Đã có thanh ngang phía trên Sheet và nút Chi tiết giải thích màu/ký hiệu |
-| Bộ lọc | Chờ triển khai |
+| Bộ lọc | Đã có loại và trạng thái kết hợp AND, số kết quả, Xóa lọc và thông báo rỗng. Ghế lệch lọc mờ/khóa chạm, Sheet giữ lựa chọn với nhãn ngoài lọc |
 | Xoay màn hình và phục hồi | Lựa chọn được giữ bằng ViewModel khi xoay. Còn kiểm chứng đầy đủ, giữ camera và bổ sung SavedStateHandle |
 | Kiểm thử tổng thể và hồ sơ nộp | Đang thực hiện. Còn đo hiệu năng, clone sạch, video và kiểm tra quyền truy cập liên kết |
 
-**Việc tiếp theo** là bộ lọc và kiểm thử phối hợp với Bottom Sheet.
+**Việc tiếp theo** là nghiệm thu toàn bộ tương tác, xoay và hoàn thiện độ bền khi phục hồi.
 
 ## Bộ kế hoạch
 
@@ -72,6 +72,7 @@ Chia commit theo phần thay đổi có ý nghĩa và nhịp làm thực tế. T
 | 2026-11-27 | Codex đồng nhất tiến độ README và checklist với mã nguồn 915b1a7 | README.md và docs/05-nghiem-thu.md | Đối chiếu ViewModel, luồng Activity–Canvas và unit test hiện có. Ghi rõ phạm vi logic T02 đã có bằng chứng, các ca UI và xoay đang chờ. |
 | 2026-11-27 | Codex triển khai Bottom Sheet hai nấc và nối với state hiện có | MainActivity, layout, SelectedSeatAdapter, locateSeat và kiểm thử BookingSheetTest | Build/unit test đã qua. Hai ca tích hợp trên Pixel_7 kiểm tra tổng tiền, xóa/định vị, dựng lại Activity và vùng map/danh sách cuộn ở hướng ngang. Bộ lọc và khôi phục sau khi hệ thống hủy tiến trình còn chờ. |
 | 2026-11-27 | Codex triển khai Legend trực tiếp theo tham khảo UX của sinh viên | view_seat_legend.xml, item_seat_legend.xml, setupLegend, màu dùng chung và BookingSheetTest | Build/unit test và ba ca thiết bị đã qua, gồm vùng nhìn dọc/ngang và mở/đóng Chi tiết giữ lựa chọn. Cỡ chữ lớn và bộ lọc cần kiểm tra thêm. |
+| 2026-11-27 | Codex triển khai lọc loại/trạng thái và đồng bộ Canvas–Sheet | SeatFilter, state/ViewModel, Activity, Canvas, adapter, layout và kiểm thử | Build, 3 ca unit test bộ lọc và 4 ca tích hợp Sheet trên Pixel_7 đã qua. Xác nhận AND, rỗng, xóa lọc giữ lựa chọn, cập nhật trạng thái sau chọn, nhãn ngoài lọc, Reset View và dựng lại Activity. Ca chữ lớn và hủy tiến trình còn chờ. |
 
 Khi triển khai, bổ sung hướng dẫn chạy theo môi trường đã kiểm chứng, kiến trúc mã nguồn thực tế, tổ chức dữ liệu, công thức đổi tọa độ, hit-testing, quản lý trạng thái, tối ưu hiệu năng và liên kết video. Cập nhật nhật ký sau mỗi phiên sử dụng AI theo [quy chuẩn ghi chép](docs/04-quy-chuan.md).
 

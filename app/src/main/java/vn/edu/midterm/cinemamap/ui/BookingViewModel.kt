@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import vn.edu.midterm.cinemamap.model.Seat
 import vn.edu.midterm.cinemamap.model.SeatAvailability
+import vn.edu.midterm.cinemamap.model.SeatType
 
 class BookingViewModel : ViewModel() {
 
@@ -18,6 +19,8 @@ class BookingViewModel : ViewModel() {
      */
     fun onSeatTapped(seat: Seat) {
         _uiState.update { currentState ->
+            val isSelected = currentState.selectedSeats.any { it.id == seat.id }
+            if (!currentState.filter.matches(seat, isSelected)) return@update currentState
             if (seat.availability != SeatAvailability.AVAILABLE) {
                 return@update currentState.copy(inspectedSeat = seat)
             }
@@ -30,7 +33,7 @@ class BookingViewModel : ViewModel() {
             }
 
             // 3. Tính toán lại các thông số dẫn xuất
-            calculateNewState(newSelectedSeats, inspectedSeat = seat)
+            calculateNewState(currentState, newSelectedSeats, inspectedSeat = seat)
         }
     }
 
@@ -42,7 +45,7 @@ class BookingViewModel : ViewModel() {
             val newSelectedSeats = currentState.selectedSeats.filterNot { it.id == seatId }
             // Nếu ghế vừa bị xóa trùng với inspectedSeat thì có thể xóa hoặc giữ nguyên
             val newInspected = if (currentState.inspectedSeat?.id == seatId) null else currentState.inspectedSeat
-            calculateNewState(newSelectedSeats, inspectedSeat = newInspected)
+            calculateNewState(currentState, newSelectedSeats, inspectedSeat = newInspected)
         }
     }
 
@@ -51,21 +54,37 @@ class BookingViewModel : ViewModel() {
      */
     fun clearSelection() {
         _uiState.update { currentState ->
-            calculateNewState(emptyList(), inspectedSeat = null)
+            calculateNewState(currentState, emptyList(), inspectedSeat = null)
         }
     }
 
     /**
      * Hàm phụ trợ tính toán số lượng chỗ và tổng tiền từ danh sách ghế đã chọn.
      */
-    private fun calculateNewState(selectedSeats: List<Seat>, inspectedSeat: Seat?): BookingUiState {
+    fun setTypeFilter(type: SeatType?) {
+        _uiState.update { it.copy(filter = it.filter.copy(type = type)) }
+    }
+
+    fun setStatusFilter(status: SeatStatusFilter?) {
+        _uiState.update { it.copy(filter = it.filter.copy(status = status)) }
+    }
+
+    fun clearFilters() {
+        _uiState.update { it.copy(filter = SeatFilter()) }
+    }
+
+    private fun calculateNewState(
+        currentState: BookingUiState,
+        selectedSeats: List<Seat>,
+        inspectedSeat: Seat?
+    ): BookingUiState {
         val totalSeats = selectedSeats.size
         // Mỗi ghế có it.type.capacity (Standard/VIP = 1, Couple = 2)
         val totalSpots = selectedSeats.sumOf { it.type.capacity }
         // Mỗi ghế có it.type.priceVnd (85.000, 110.000, 190.000)
         val totalPrice = selectedSeats.sumOf { it.type.priceVnd }
 
-        return BookingUiState(
+        return currentState.copy(
             selectedSeats = selectedSeats,
             inspectedSeat = inspectedSeat,
             totalSeatsCount = totalSeats,

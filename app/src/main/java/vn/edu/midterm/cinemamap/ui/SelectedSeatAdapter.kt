@@ -19,12 +19,14 @@ internal fun Seat.typeLabelResource(): Int = when (type) {
     SeatType.COUPLE -> R.string.seat_couple
 }
 
+data class SelectedSeatItem(val seat: Seat, val outsideFilter: Boolean)
+
 class SelectedSeatAdapter(
     private val onLocate: (Seat) -> Unit,
     private val onRemove: (String) -> Unit
-) : ListAdapter<Seat, SelectedSeatAdapter.Holder>(object : DiffUtil.ItemCallback<Seat>() {
-    override fun areItemsTheSame(old: Seat, new: Seat) = old.id == new.id
-    override fun areContentsTheSame(old: Seat, new: Seat) = old == new
+) : ListAdapter<SelectedSeatItem, SelectedSeatAdapter.Holder>(object : DiffUtil.ItemCallback<SelectedSeatItem>() {
+    override fun areItemsTheSame(old: SelectedSeatItem, new: SelectedSeatItem) = old.seat.id == new.seat.id
+    override fun areContentsTheSame(old: SelectedSeatItem, new: SelectedSeatItem) = old == new
 }) {
     private val money = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("vi-VN"))
 
@@ -37,12 +39,16 @@ class SelectedSeatAdapter(
         Holder(LayoutInflater.from(parent.context).inflate(R.layout.item_selected_seat, parent, false))
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        val seat = getItem(position)
+        val item = getItem(position)
+        val seat = item.seat
         val context = holder.itemView.context
         holder.locate.text = context.getString(
             R.string.seat_item, seat.id, context.getString(seat.typeLabelResource()),
             seat.type.capacity, money.format(seat.type.priceVnd)
         )
+        if (item.outsideFilter) {
+            holder.locate.append(context.getString(R.string.outside_filter_suffix))
+        }
         holder.locate.contentDescription = context.getString(R.string.locate_seat_description, seat.id)
         holder.remove.contentDescription = context.getString(R.string.remove_seat_description, seat.id)
         holder.locate.setOnClickListener { onLocate(seat) }
