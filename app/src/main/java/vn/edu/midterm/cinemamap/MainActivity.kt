@@ -1,6 +1,8 @@
 package vn.edu.midterm.cinemamap
 
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -19,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import vn.edu.midterm.cinemamap.map.CinemaMapView
 import vn.edu.midterm.cinemamap.model.SeatAvailability
@@ -41,6 +44,8 @@ class MainActivity : AppCompatActivity() {
         val content = findViewById<View>(R.id.booking_content)
         val sheet = findViewById<LinearLayout>(R.id.booking_sheet)
         val header = findViewById<View>(R.id.sheet_header)
+        val legend = findViewById<View>(R.id.seat_legend)
+        setupLegend()
         val behavior = BottomSheetBehavior.from(sheet)
         val toggle = findViewById<MaterialButton>(R.id.toggle_sheet)
         val summary = findViewById<TextView>(R.id.booking_summary)
@@ -60,7 +65,10 @@ class MainActivity : AppCompatActivity() {
         fun updateMapHeight() {
             // Apply after CoordinatorLayout finishes positioning its children.
             cinemaMap.post {
-                val availableHeight = sheet.top.coerceIn(1, content.height.coerceAtLeast(1))
+                // Legend occupies the strip immediately above the sheet.
+                val legendTop = (sheet.top - legend.height).coerceAtLeast(0)
+                legend.translationY = legendTop.toFloat()
+                val availableHeight = legendTop.coerceIn(1, content.height.coerceAtLeast(1))
                 if (cinemaMap.layoutParams.height != availableHeight) {
                     cinemaMap.updateLayoutParams { height = availableHeight }
                 }
@@ -78,6 +86,7 @@ class MainActivity : AppCompatActivity() {
             behavior.peekHeight = header.height.coerceAtMost(sheetHeight - 1)
         }
 
+        legend.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> updateMapHeight() }
         header.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> sizeSheet() }
         content.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> sizeSheet() }
         sheet.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> updateMapHeight() }
@@ -141,4 +150,43 @@ class MainActivity : AppCompatActivity() {
             insets
         }
     }
+    private fun setupLegend() {
+        val items = findViewById<LinearLayout>(R.id.legend_items)
+        val density = resources.displayMetrics.density
+
+        fun addItem(labelResource: Int, symbol: String, colorResource: Int, selected: Boolean = false) {
+            val item = LayoutInflater.from(this).inflate(R.layout.item_seat_legend, items, false)
+            val sample = item.findViewById<TextView>(R.id.legend_sample)
+            sample.text = symbol
+            sample.setTextColor(getColor(if (selected) R.color.seat_accent else R.color.seat_outline))
+            sample.background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                setColor(getColor(colorResource))
+                val strokeColor = if (selected) R.color.seat_accent else R.color.seat_outline
+                val strokeWidth = if (selected) 2f else 1f
+                setStroke((strokeWidth * density).toInt(), getColor(strokeColor))
+            }
+            if (labelResource == R.string.seat_couple) {
+                sample.updateLayoutParams { width = (44 * density).toInt() }
+            }
+            item.findViewById<TextView>(R.id.legend_label).setText(labelResource)
+            items.addView(item)
+        }
+
+        addItem(R.string.seat_standard, "", R.color.seat_standard)
+        addItem(R.string.seat_vip, "", R.color.seat_vip)
+        addItem(R.string.seat_couple, "|", R.color.seat_couple)
+        addItem(R.string.seat_selected, "✓", R.color.seat_standard, selected = true)
+        addItem(R.string.seat_booked, "−", R.color.seat_occupied)
+        addItem(R.string.seat_unavailable, "×", R.color.seat_occupied)
+
+        findViewById<View>(R.id.legend_details).setOnClickListener {
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.legend_title)
+                .setMessage(R.string.legend_description)
+                .setPositiveButton(R.string.legend_close, null)
+                .show()
+        }
+    }
+
 }

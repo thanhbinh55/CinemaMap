@@ -44,7 +44,7 @@ DỌC — thu gọn                                  NGANG — mở rộng
 └────────────────────────────┘
 ```
 
-- Màn hình đầu mở trực tiếp sơ đồ với toàn phòng vừa vùng nhìn. Màn chiếu, lối đi, nhãn khu và hàng được vẽ trên Canvas. Toolbar và legend nằm ngoài Canvas. Legend có các dấu trạng thái tóm tắt, chạm Chú thích để xem đầy đủ ở một panel phụ, đóng để quay lại đúng vị trí.
+- Màn hình đầu mở trực tiếp sơ đồ với toàn phòng vừa vùng nhìn. Màn chiếu, lối đi, nhãn khu và hàng được vẽ trên Canvas. Toolbar và legend nằm ngoài Canvas. Legend là thanh cuộn ngang nằm giữa Canvas và Bottom Sheet, luôn xuất hiện phía trên mép Sheet. Nút Chi tiết mở phần giải thích đầy đủ, đóng để tiếp tục ở đúng vị trí và lựa chọn hiện tại.
 - Bản dọc có tiêu đề, hàng công cụ và dòng điều kiện lọc khi áp dụng. Bản ngang dồn tiêu đề/công cụ vào một hàng khi đủ bề rộng, ưu tiên chiều cao sơ đồ. Mở rộng Sheet định hướng tối đa khoảng 45% vùng nội dung sau thanh công cụ, điều chỉnh theo thiết bị và insets để còn vùng Canvas thao tác. Danh sách cuộn trong Sheet với phần tóm tắt gọn. Dùng thanh kéo và một nút có nhãn đổi Thu gọn/Mở rộng để thao tác được bằng cả chạm nút lẫn kéo.
 - Mặc định hiện suất giả lập, 0 ghế, 0 chỗ và 0 đ. Khi chọn, cập nhật số đối tượng, số chỗ và tạm tính ngay, cho xem mã nếu chỉ có một mục. Khi chạm một ghế đã đặt/không khả dụng, tóm tắt hoặc chi tiết ghi mã và trạng thái, giữ số lượng đã chọn. Khi chọn ghế đôi, chỉ rõ 2 chỗ và giá theo cặp.
 - Lọc theo loại và trạng thái trong panel gọn. Ô điều kiện hiển thị khi đóng panel, có nút xóa từng điều kiện và Xóa lọc. Khi có 0 kết quả, hiện nội dung “Không có ghế phù hợp” và thao tác xóa bộ lọc, ưu tiên để Canvas và Sheet tiếp tục sử dụng được.

@@ -37,11 +37,39 @@ class BookingSheetTest {
                 val list = activity.findViewById<RecyclerView>(R.id.selected_seats)
                 assertTrue(map.width > map.height)
                 assertTrue("map=${map.width}x${map.height}, sheetTop=${sheet.top}, sheetHeight=${sheet.height}, parentHeight=${(sheet.parent as View).height}, header=${activity.findViewById<View>(R.id.sheet_header).height}, state=${BottomSheetBehavior.from(sheet).state}", map.height > 80)
-                assertTrue(map.bottom <= sheet.top + 2)
+                val legend = activity.findViewById<View>(R.id.seat_legend)
+                assertTrue(map.bottom <= legend.y + 2)
+                assertTrue(legend.y + legend.height <= sheet.top + 2)
                 assertTrue(list.height > 0)
                 assertTrue(list.canScrollVertically(1))
                 assertEquals(BottomSheetBehavior.STATE_EXPANDED, BottomSheetBehavior.from(sheet).state)
                 activity.requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            }
+        }
+    }
+
+    @Test
+    fun legendDialogKeepsSelectionAndCanBeClosed() {
+        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+            scenario.onActivity { activity ->
+                val model = ViewModelProvider(activity)[BookingViewModel::class.java]
+                model.onSeatTapped(MockCinemaData.rows.first().seats.first())
+            }
+            androidx.test.espresso.Espresso.onView(
+                androidx.test.espresso.matcher.ViewMatchers.withId(R.id.legend_details)
+            ).perform(androidx.test.espresso.action.ViewActions.click())
+            androidx.test.espresso.Espresso.onView(
+                androidx.test.espresso.matcher.ViewMatchers.withText(R.string.legend_title)
+            ).check(androidx.test.espresso.assertion.ViewAssertions.matches(
+                androidx.test.espresso.matcher.ViewMatchers.isDisplayed()
+            ))
+            androidx.test.espresso.Espresso.onView(
+                androidx.test.espresso.matcher.ViewMatchers.withText(R.string.legend_close)
+            ).perform(androidx.test.espresso.action.ViewActions.click())
+            scenario.onActivity { activity ->
+                assertEquals(setOf("A01"),
+                    activity.findViewById<CinemaMapView>(R.id.cinema_map).selectedSeatIds)
+                assertEquals(6, activity.findViewById<LinearLayout>(R.id.legend_items).childCount)
             }
         }
     }
@@ -62,7 +90,9 @@ class BookingSheetTest {
                 assertEquals(BottomSheetBehavior.STATE_EXPANDED, BottomSheetBehavior.from(sheet).state)
                 val map = activity.findViewById<CinemaMapView>(R.id.cinema_map)
                 assertTrue(map.height > 0)
-                assertTrue(map.bottom <= sheet.top + 2)
+                val legend = activity.findViewById<View>(R.id.seat_legend)
+                assertTrue(map.bottom <= legend.y + 2)
+                assertTrue(legend.y + legend.height <= sheet.top + 2)
                 val summary = activity.findViewById<TextView>(R.id.booking_summary).text.toString()
                 assertTrue(summary.contains("3 ghế"))
                 assertTrue(summary.contains("4 chỗ"))

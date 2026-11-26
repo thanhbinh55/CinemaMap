@@ -20,4 +20,8 @@
     <string name="seat_booked">Đã đặt</string>
     <string name="seat_unavailable">Không khả dụng</string>
     <string name="no_inspected_seat">Chạm ghế để xem thông tin.</string>
+    <string name="legend_title">Chú thích sơ đồ ghế</string>
+    <string name="legend_details">Chi tiết</string>
+    <string name="legend_close">Đóng</string>
+    <string name="legend_description">Vuốt ngang thanh chú thích để xem các loại ghế và trạng thái.\n\nGhế thường: nền xanh tím nhạt, 1 chỗ.\nGhế VIP: nền vàng nhạt, 1 chỗ.\nGhế đôi: nền xanh bạc hà, khối rộng có vạch chia, 2 chỗ. Chọn và tính giá theo cặp.\n\nGhế trống: nền theo loại và viền mảnh, chạm để chọn.\nĐang chọn: giữ nền theo loại, viền chàm đậm và dấu ✓; chạm lần nữa để bỏ chọn.\nĐã đặt: nền xám và dấu ngang, chạm để xem thông tin.\nKhông khả dụng: nền xám và dấu ×, chạm để xem thông tin.\nĐịnh vị: vòng tròn chàm quanh ghế vừa được chọn từ danh sách, mất khi chạm lại sơ đồ.\n\nMàn chiếu nằm phía trên. Khoảng trống giữa hai cụm ghế là lối đi. A–L là nhãn hàng. Thường, VIP, Ghế đôi là nhãn khu.</string>
 </resources>

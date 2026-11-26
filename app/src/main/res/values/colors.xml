@@ -2,4 +2,10 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="seat_standard">#E1E5F7</color>
+    <color name="seat_vip">#F7DCB7</color>
+    <color name="seat_couple">#D6EFE6</color>
+    <color name="seat_occupied">#D7D7DE</color>
+    <color name="seat_outline">#514C61</color>
+    <color name="seat_accent">#3C3593</color>
 </resources>

@@ -28,12 +28,12 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         textAlign = Paint.Align.CENTER
     }
     private val background = Color.rgb(247, 244, 237)
-    private val screenColor = Color.rgb(60, 53, 147)
-    private val standardColor = Color.rgb(225, 229, 247)
-    private val vipColor = Color.rgb(247, 220, 183)
-    private val coupleColor = Color.rgb(214, 239, 230)
-    private val occupiedColor = Color.rgb(215, 215, 222)
-    private val outlineColor = Color.rgb(81, 76, 97)
+    private val screenColor = context.getColor(R.color.seat_accent)
+    private val standardColor = context.getColor(R.color.seat_standard)
+    private val vipColor = context.getColor(R.color.seat_vip)
+    private val coupleColor = context.getColor(R.color.seat_couple)
+    private val occupiedColor = context.getColor(R.color.seat_occupied)
+    private val outlineColor = context.getColor(R.color.seat_outline)
     private val screenLabel = resources.getString(R.string.screen_label)
     private val typeLabels = mapOf(
         SeatType.STANDARD to resources.getString(R.string.seat_standard),
