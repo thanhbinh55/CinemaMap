@@ -1,0 +1,22 @@
+{
+    "programs": [
+
+    ],
+    "stream_groups": [
+
+    ],
+    "streams": [
+        {
+            "codec_name": "h264",
+            "profile": "Constrained Baseline",
+            "width": 1008,
+            "height": 432,
+            "r_frame_rate": "24/1",
+            "nb_frames": "120"
+        }
+    ],
+    "format": {
+        "duration": "5.000000",
+        "size": "612826"
+    }
+}

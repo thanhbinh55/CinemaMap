@@ -1,0 +1,7 @@
+
+vn.edu.midterm.cinemamap.CinemaPreviewUpgradeTest:....
+vn.edu.midterm.cinemamap.CinemaPreviewTest:.....
+
+Time: 67.736
+
+OK (9 tests)

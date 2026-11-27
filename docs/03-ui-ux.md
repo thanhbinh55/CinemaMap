@@ -1,77 +1,49 @@
-# Thiết kế và trải nghiệm chọn ghế
+# UI/UX đang triển khai
 
-## Tham khảo từ ảnh MoMo
+## Nhận diện và màu
 
-Ảnh do sinh viên cung cấp cho thấy thứ bậc dễ theo dõi: tên rạp, hướng màn chiếu, sơ đồ ghế, chú thích rồi thông tin suất chiếu và tạm tính ở đáy. Dùng nguyên tắc định hướng đó cho rạp và phim hư cấu. Thiết kế riêng với dạng dấu ghế hình chữ nhật, nhãn trực tiếp cho từng khu, thanh lọc và nút Toàn phòng, cùng Sheet hai nấc phục vụ bài thi. Dùng biểu tượng hình học tự vẽ cho trạng thái ghế.
+Nền trắng, chủ đạo navy, ghế chưa chọn pastel và ghế đang chọn cobalt nổi bật theo lựa chọn sinh viên. Không sao chép logo hay tài nguyên của MoMo/CGV; ảnh sinh viên cung cấp chỉ tham khảo thứ bậc thông tin, điều hướng và thao tác.
 
-## Ba hướng màu
-
-| Tone | Nền app / bề mặt | Chữ chính / chữ phụ | Nhấn / chữ trên nhấn | Thường / VIP / Đôi | Cảm nhận |
-| --- | --- | --- | --- | --- | --- |
-| **Kem – Chàm (đề xuất)** | `#F7F4ED` / `#FFFFFF` | `#181A2A` / `#514C61` | `#3C3593` / `#FFFFFF` | `#E1E5F7` / `#F7DCB7` / `#D6EFE6` | Sáng, dễ đọc khi nhìn tổng quan |
-| Bạc hà – Xanh rừng | `#F0FAF6` / `#FFFFFF` | `#142922` / `#3B534A` | `#075949` / `#FFFFFF` | `#D5EDE8` / `#F8E2AB` / `#E8DEF8` | Dịu, sạch, phù hợp demo ngoài trời |
-| Than – Hổ phách | `#141820` / `#202632` | `#F2F5FA` / `#BAC5D5` | `#FFCA66` / `#241800` | `#33445D` / `#664834` / `#325B54` | Tương phản theo chất liệu phòng chiếu |
-
-### Mã hóa trạng thái
-
-| Trạng thái | Dấu hiệu | Chạm |
+| Vai trò | Nền | Chữ |
 | --- | --- | --- |
-| Trống | Nền theo loại + viền. Ghế đôi có nét chia và ký hiệu 2 chỗ | Chọn ghế hoặc cặp |
-| Đang chọn | Nền chàm đậm, chữ trắng và dấu ✓ ở mức tổng quan | Bỏ chọn |
-| Đã đặt | Nền trung tính và vạch ngang | Xem mã, loại và trạng thái |
-| Không khả dụng | Nền trung tính và dấu × hoặc nét chéo | Xem mã, loại và trạng thái |
-| Ngoài bộ lọc | Mờ hơn, kèm nhãn giải thích trong chú thích. Vòng định vị tạm thời nếu yêu cầu từ Sheet | Vùng mờ bỏ qua thao tác chạm |
+| App / Canvas / Sheet / dialog | #FFFFFF | Chính #102B4E; phụ #51647E |
+| Điều khiển / màn chiếu | Navy #002366 | Theo Material theme |
+| Thường | #CDDFF8 | #315D93 |
+| VIP | #D5C8EC | #624383 |
+| Ghế đôi | #BFE3DB | #276555 |
+| Đã đặt | #9CA8B8 | #2D3A4B |
+| Không khả dụng | #F3C9AD | #86482B |
+| Đang chọn | #0057FF | #FFFFFF |
 
-Dùng font hệ thống với kích thước tham khảo 20sp cho tiêu đề, 14–16sp cho văn bản thao tác và 12–14sp cho metadata. Dùng lưới 4dp, khoảng cách chính 8/16/24dp, mục tiêu vùng chạm 48dp cho điều khiển ngoài Canvas. Viền ghế, ký hiệu và chữ được kiểm tra tương phản trên theme chọn và trong điều kiện sáng khác nhau. Các dấu ghế nhỏ ở góc tổng quan, hỗ trợ phóng to trước khi đọc/chọn ghế chi tiết. Kiểm tra font scale lớn, focus, mô tả nút và insets. Ghế không chứa nội dung trang trí theo phim.
+Ô ghế và mẫu Legend bo góc, **không vẽ viền**, không dùng ✓/−/× hoặc vạch chia ghế đôi. Ghế đôi rộng hơn; chi tiết ghi 2 chỗ/tính theo cặp. Định vị dùng vòng cobalt; vòng này khác trạng thái đang chọn. Mã ghế luôn hiện, chữ đậm 11,2 world (80% cỡ 14 trước đó), căn giữa theo font và tự thu nếu vượt đệm ngang 8 world. Ở toàn phòng chữ nhỏ theo kích thước ô, hỗ trợ pinch để đọc/chọn chi tiết.
 
-## Bố cục
+## Bố cục và điều hướng
 
-```text
-DỌC — thu gọn                                  NGANG — mở rộng
-┌────────────────────────────┐                 ┌────────────────────────────────────────────┐
-│ Rạp Ánh Đăng · Phòng 01    │                 │ Phòng 01     Lọc     Chú thích   Toàn phòng │
-│ Lọc   Toàn phòng  Chú thích│                 ├────────────────────────────────────────────┤
-│ [VIP ×]        108 kết quả │                 │           MÀN CHIẾU   ↔                    │
-├────────────────────────────┤                 │   THƯỜNG   ▫ ▫ ▫    ▫ ▫ ▫                  │
-│         MÀN CHIẾU          │                 │   VIP      ▫ ▫ ✓    ▫ ▫ ▫                  │
-│ A  ▫ ▫ ▫    ▫ ▫ ▫  Thường │                 │   ĐÔI       ▭ ▭      ▭ ▭                   │
-│ E  ▫ ▫ ✓    ▫ ▫ ▫  VIP    │                 ├────────────────────────────────────────────┤
-│ K   ▭ ▭      ▭ ▭   Đôi     │                 │  ━   1 ghế · 1 chỗ      110.000 đ          │
-├────────────────────────────┤                 │  E08  VIP   110.000 đ     Định vị   Xóa    │
-│            ━               │                 │  Danh sách có thể cuộn                     │
-│ 1 ghế · 1 chỗ    110.000 đ  │                 └────────────────────────────────────────────┘
-│ Xem ghế đã chọn            │
-└────────────────────────────┘
-```
+- Dọc: bộ lọc ở trên; Canvas ở giữa, Legend ngay trên Sheet; Sheet thu/mở luôn để lại vùng map tương tác. Màn chiếu cong nằm ở đầu phòng.
+- Ngang: Canvas/Legend 64% chiều rộng bên trái; Sheet 36% bên phải. Mở danh sách không ép chiều cao map thành dải nhỏ.
+- Nút Toàn phòng là biểu tượng 48dp có tooltip/contentDescription ở góc trái vùng map. Minimap góc phải hiện khi pan hoặc zoom; khung navy biểu diễn viewport và chạm để reset.
+- Header: `Rạp HCMUS · Phòng 01 · 19:00`. Số ghế/chỗ bên trái, tiền đậm bên phải; ghế đang xem và Xem ghế/Thu gọn ở dòng dưới. Nhãn nút phản ánh đúng nấc sau xoay.
+- Legend cuộn ngang có nút Chi tiết cố định. Dialog giải thích toàn bộ loại/trạng thái, ghế mờ, định vị, lối đi và ghế đôi; bôi đậm các ý chính.
 
-- Màn hình đầu mở trực tiếp sơ đồ với toàn phòng vừa vùng nhìn. Màn chiếu, lối đi, nhãn khu và hàng được vẽ trên Canvas. Toolbar và legend nằm ngoài Canvas. Legend là thanh cuộn ngang nằm giữa Canvas và Bottom Sheet, luôn xuất hiện phía trên mép Sheet. Nút Chi tiết mở phần giải thích đầy đủ, đóng để tiếp tục ở đúng vị trí và lựa chọn hiện tại.
-- Bản dọc có tiêu đề, hàng công cụ và dòng điều kiện lọc khi áp dụng. Bản ngang dồn tiêu đề/công cụ vào một hàng khi đủ bề rộng, ưu tiên chiều cao sơ đồ. Mở rộng Sheet định hướng tối đa khoảng 45% vùng nội dung sau thanh công cụ, điều chỉnh theo thiết bị và insets để còn vùng Canvas thao tác. Danh sách cuộn trong Sheet với phần tóm tắt gọn. Dùng thanh kéo và một nút có nhãn đổi Thu gọn/Mở rộng để thao tác được bằng cả chạm nút lẫn kéo.
-- Mặc định hiện suất giả lập, 0 ghế, 0 chỗ và 0 đ. Khi chọn, cập nhật số đối tượng, số chỗ và tạm tính ngay, cho xem mã nếu chỉ có một mục. Khi chạm một ghế đã đặt/không khả dụng, tóm tắt hoặc chi tiết ghi mã và trạng thái, giữ số lượng đã chọn. Khi chọn ghế đôi, chỉ rõ 2 chỗ và giá theo cặp.
-- Lọc theo loại và trạng thái trong panel gọn. Ô điều kiện hiển thị khi đóng panel, có nút xóa từng điều kiện và Xóa lọc. Khi có 0 kết quả, hiện nội dung “Không có ghế phù hợp” và thao tác xóa bộ lọc, ưu tiên để Canvas và Sheet tiếp tục sử dụng được.
-- Chạm dòng hoặc nút Định vị đưa ghế vào vùng nhìn và thêm vòng định vị tạm thời. Xóa bằng nút riêng có nhãn theo mã ghế. Nút Toàn phòng đặt lại camera, giúp khám phá lại toàn sơ đồ. Xoay máy giữ lựa chọn, lọc, Sheet và góc nhìn tương đối theo đặc tả kỹ thuật.
+## Luồng chọn/lọc/Sheet
 
-## Cải tiến theo thứ tự ưu tiên
+1. Chạm Trống để chọn; chạm lại để bỏ. Đã đặt/Không khả dụng chỉ hiện thông tin. StateFlow cập nhật nền, số lượng và giá.
+2. Lọc bằng hai nút Loại/Trạng thái, mỗi nút mở dialog chọn một giá trị. AND giữa hai tiêu chí; nhãn nút luôn thể hiện điều kiện. Có Xóa lọc chung; không có chip xóa riêng mỗi điều kiện.
+3. Ngoài lọc: mờ/khóa chạm ở Canvas, lựa chọn vẫn nằm trong Sheet kèm nhãn Ngoài bộ lọc. Không đột ngột xóa vé của người dùng.
+4. Không có kết quả: hiện thông báo và hướng dẫn Xóa lọc. Không hiển thị bộ đếm 196/196 theo yêu cầu sinh viên.
+5. Mở Sheet: danh sách cuộn, dòng ghế định vị và đổi inspectedSeat; Xóa bỏ riêng ghế đó, cập nhật tạm tính ngay. Reset chỉ đổi camera, giữ lọc/lựa chọn/nấc Sheet.
+6. Xoay dọc/ngang giữ trạng thái và góc nhìn tương đối trong biên mới. Insets chừa thanh hệ thống; ngoài Canvas, điều khiển dùng dp/sp.
 
-1. Nút phóng to/thu nhỏ lấy tâm viewport, hỗ trợ thao tác bằng một tay. Dùng cùng camera như pinch.
-2. Tìm nhanh mã ghế dạng `e8` hoặc `E08`. Dùng chung thao tác định vị, giải thích khi kết quả ngoài bộ lọc.
-3. Màn xác nhận đặt vé giả lập, hiển thị mã ghế, số chỗ và tổng tiền. Khi sinh viên yêu cầu triển khai, thao tác xác nhận cập nhật tập ghế đã đặt mô phỏng và xóa các lựa chọn tương ứng trong cùng một lần cập nhật trạng thái. Demo bài thi dùng fixture ổn định, có luồng khôi phục phiên mẫu rõ ràng.
-4. Duyệt ghế bằng trình đọc màn hình qua danh sách điều hướng theo hàng hoặc accessibility node ảo, ưu tiên giải pháp ít làm tăng độ phức tạp của Canvas.
+## Xem trước 3D
 
-Chọn từng cải tiến sau khi đạt các ca bắt buộc. Luồng xác nhận đặt vé là phần mở rộng, còn trạng thái vé Đã đặt đã có ngay trong fixture bắt buộc.
+Nút 3D trong dòng mở đúng ghế đó; nút chung mở inspectedSeat. Xem 3D không đổi vé, bộ lọc hoặc giá. Kéo một ngón nhìn quanh 360°, Nhìn màn chiếu reset hướng, Đổi ghế xem chọn hàng/ID. Ghế đôi chỉ **Trái/Phải**, mặc định Trái; không có vị trí Giữa.
 
-## Điều chỉnh theo ảnh tham khảo ngày 27/11/2026
+Minimap 3D mở Canvas lớn có pan/zoom để chọn chính xác. A/B ghim hai vị trí và tự pause phim, cùng FOV/hướng màn chiếu; giữ nút để ghim lại. Menu có toàn màn hình, cấu hình phòng và xóa ghim. Back thoát toàn màn hình trước khi rời cảnh. Quay lại 2D định vị ID xem cuối và cập nhật thông tin/nút chung.
 
-- Hướng dọc giữ Canvas, thanh Legend và Bottom Sheet. Nút Toàn phòng là biểu tượng khung vừa phòng 48dp ở góc trái trên vùng sơ đồ, có mô tả và tooltip.
-- Hướng ngang dành 64% chiều rộng cho sơ đồ và Legend, 36% cho panel Sheet. Sheet có hai nấc trong vùng bên phải. Chiều cao của Sheet hoạt động độc lập với chiều cao Canvas.
-- Ghế và mẫu Legend bo nhẹ, nền xanh dương nhạt cho Thường, tím nhạt cho VIP, bạc hà cho Đôi. Ghế chọn dùng chàm đậm và chữ trắng. Ghế đã đặt có nền xám xanh đậm, ghế không khả dụng có nền vàng hổ phách nhạt. Trạng thái không dùng ký hiệu; mã ghế hiện khi kích thước đủ đọc.
-- Pan có khoảng đệm 15% vùng nhìn trên mỗi trục. Nội dung vẫn bị giới hạn để giữ sơ đồ trong tầm điều hướng. Reset View căn giữa theo góc mặc định.
-- Minimap ở góc phải trên Canvas hiện khi camera di chuyển hoặc zoom vượt mức toàn phòng. Mô hình thu nhỏ dùng cùng dữ liệu ghế, màu và bộ lọc. Khung vàng là phần world đang nhìn thấy, được tính bằng camera.viewToWorld trên hai góc viewport. Chạm minimap đưa về toàn phòng.
-- Tham khảo thứ bậc thông tin và thao tác từ ảnh người dùng cung cấp, giữ dữ liệu và hình vẽ riêng của CinemaMap.
+Video lửa trại 5 giây tự tạo, phát offline, lặp, không âm thanh; có Phát/Tạm dừng. Phòng 3D ghi rõ giả lập, không cam kết góc nhìn của rạp thật. [Chi tiết](07-preview-3d.md), [nguồn video](08-trailer.md).
 
-### Ý tưởng mở rộng góc nhìn 3D
+## Giới hạn UX và ý tưởng chưa triển khai
 
-Sau khi nghiệm thu phần 2D, bổ sung nút Xem góc nhìn cho ghế đang xem. Luồng dự kiến là chi tiết ghế → xem trước từ vị trí ghế → quay lại sơ đồ với lựa chọn hiện tại. Tách cảnh 3D khỏi Canvas 2D, dùng cùng ID ghế và dữ liệu vị trí để đặt camera hướng về tâm màn chiếu. Cần thống nhất kích thước phòng, khoảng cách hàng, chiều cao mắt và độ dốc trước khi xem kết quả như mô phỏng thực tế. Phần 3D đang ở giai đoạn ý tưởng.
+TalkBack có mô tả cho điều khiển và dòng Sheet, nhưng Canvas chưa có accessibility node riêng cho từng ghế. Màu trạng thái được dùng theo yêu cầu sinh viên; tên trạng thái vẫn có trong chi tiết/Legend. Chưa cam kết hỗ trợ hoàn chỉnh mọi dạng rối loạn sắc giác. Kiểm tra font lớn, màn nhỏ và Samsung thật tiếp tục nằm trong phần sinh viên dùng thử.
 
-## Điều chỉnh nhận diện trạng thái bằng màu
-
-Theo yêu cầu sinh viên, các mẫu Legend và ghế trên sơ đồ dùng màu nền để phân biệt trạng thái, loại bỏ các dấu ✓, −, × và vạch chia cặp. Ghế đôi có khối rộng hơn và nhãn 2 chỗ trong chi tiết. Đang chọn là chàm đậm, Đã đặt là xám xanh đậm, Không khả dụng là vàng hổ phách nhạt. Mã ghế vẫn hiện khi zoom đủ lớn. Legend, Sheet và bộ lọc tiếp tục ghi tên trạng thái bằng chữ.
+Chưa triển khai: tìm nhanh ID, nút +/- một ngón, xác nhận đặt vé/thanh toán và backend. Đề cho phép dùng **lọc hoặc tìm kiếm**, mock data và không yêu cầu thanh toán, nên đây là cải tiến tùy chọn. Không mở rộng các phần này để thay thế video demo và kiểm chứng các chức năng bắt buộc.

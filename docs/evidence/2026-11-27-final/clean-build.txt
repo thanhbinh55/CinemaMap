@@ -1,0 +1,112 @@
+Source commit: f3e32f91348b21418246b3bdb857787f3988ef7c
+Local clone with --no-hardlinks; empty working tree before build.
+JDK 25, ANDROID_HOME configured to installed SDK 37; no local.properties copied.
+Command: ./gradlew --offline :app:assembleDebug :app:testDebugUnitTest :app:assembleDebugAndroidTest :app:lintDebug
+
+Calculating task graph as no cached configuration is available for tasks: :app:assembleDebug :app:testDebugUnitTest :app:assembleDebugAndroidTest :app:lintDebug
+> Task :app:preBuild UP-TO-DATE
+> Task :app:generateDebugAndroidTestAssets UP-TO-DATE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:desugarDebugFileDependencies
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :app:javaPreCompileDebug
+> Task :app:generateDebugResources
+> Task :app:mapDebugSourceSetPaths
+> Task :app:validateSigningDebug
+> Task :app:mergeDebugAssets
+> Task :app:mergeDebugJniLibFolders
+> Task :app:writeDebugAppMetadata
+> Task :app:processDebugNavigationResources
+> Task :app:mergeDebugNativeLibs NO-SOURCE
+> Task :app:stripDebugDebugSymbols NO-SOURCE
+> Task :app:javaPreCompileDebugUnitTest
+> Task :app:preDebugAndroidTestBuild SKIPPED
+> Task :app:generateDebugAndroidTestResources
+> Task :app:checkDebugAarMetadata
+> Task :app:compileDebugNavigationResources
+> Task :app:processDebugAndroidTestNavigationResources
+> Task :app:checkDebugDuplicateClasses
+> Task :app:javaPreCompileDebugAndroidTest
+> Task :app:mergeDebugAndroidTestAssets
+> Task :app:compressDebugAndroidTestAssets
+> Task :app:mergeLibDexDebug
+> Task :app:checkDebugAndroidTestDuplicateClasses
+> Task :app:desugarDebugAndroidTestFileDependencies
+> Task :app:writeDebugSigningConfigVersions
+> Task :app:compressDebugAssets
+> Task :app:checkDebugAndroidTestAarMetadata
+> Task :app:mergeLibDexDebugAndroidTest
+> Task :app:packageDebugAndroidTestResources
+> Task :app:processDebugMainManifest
+> Task :app:packageDebugResources
+> Task :app:mapDebugAndroidTestSourceSetPaths
+> Task :app:compileDebugAndroidTestNavigationResources
+> Task :app:processDebugManifest
+> Task :app:processDebugManifestForPackage
+> Task :app:mergeDebugAndroidTestJniLibFolders
+> Task :app:mergeDebugAndroidTestNativeLibs NO-SOURCE
+> Task :app:stripDebugAndroidTestDebugSymbols NO-SOURCE
+> Task :app:validateSigningDebugAndroidTest
+> Task :app:writeDebugAndroidTestSigningConfigVersions
+> Task :app:mergeDebugAndroidTestManifest
+> Task :app:processDebugAndroidTestManifest
+> Task :app:mergeDebugAndroidTestResources
+> Task :app:extractProguardFiles
+> Task :app:mergeExtDexDebugAndroidTest
+> Task :app:parseDebugAndroidTestLocalResources
+> Task :app:generateDebugAndroidTestRFile
+> Task :app:parseDebugLocalResources
+> Task :app:generateDebugRFile
+> Task :app:processDebugAndroidTestResources
+> Task :app:generateDebugGlobalSynthetics
+> Task :app:generateDebugAndroidTestGlobalSynthetics
+> Task :app:mergeDebugResources
+> Task :app:processDebugResources
+> Task :app:mergeExtDexDebug
+
+> Task :app:compileDebugKotlin
+w: file:///private/tmp/cinemamap-clean-sKLVqv/app/src/main/java/vn/edu/midterm/cinemamap/preview/CinemaMiniMapView.kt:54:57 'field scaledDensity: Float' is deprecated. Deprecated in Java.
+
+> Task :app:compileDebugJavaWithJavac NO-SOURCE
+> Task :app:processDebugJavaRes
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:dexBuilderDebug
+> Task :app:mergeProjectDexDebug
+> Task :app:mergeDebugJavaResource
+> Task :app:generateDebugLintReportModel
+> Task :app:compileDebugUnitTestKotlin
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes
+> Task :app:generateDebugAndroidTestLintModel
+> Task :app:generateDebugUnitTestLintModel
+> Task :app:packageDebug
+> Task :app:assembleDebug
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:compileDebugAndroidTestKotlin
+> Task :app:compileDebugAndroidTestJavaWithJavac NO-SOURCE
+> Task :app:lintAnalyzeDebugUnitTest
+> Task :app:processDebugAndroidTestJavaRes
+> Task :app:testDebugUnitTest
+> Task :app:mergeDebugAndroidTestJavaResource
+> Task :app:dexBuilderDebugAndroidTest
+> Task :app:mergeProjectDexDebugAndroidTest
+> Task :app:packageDebugAndroidTest
+> Task :app:assembleDebugAndroidTest
+> Task :app:createDebugAndroidTestApkListingFileRedirect
+> Task :app:lintAnalyzeDebugAndroidTest
+> Task :app:lintAnalyzeDebug
+
+> Task :app:lintReportDebug
+Wrote HTML report to file:///private/tmp/cinemamap-clean-sKLVqv/app/build/reports/lint-results-debug.html
+Wrote SARIF report to file:///private/tmp/cinemamap-clean-sKLVqv/app/build/reports/lint-results-debug.sarif
+
+> Task :app:lintDebug
+
+BUILD SUCCESSFUL in 10s
+79 actionable tasks: 79 executed
+Configuration cache entry stored.

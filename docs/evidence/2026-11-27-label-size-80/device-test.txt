@@ -1,0 +1,6 @@
+
+vn.edu.midterm.cinemamap.BookingSheetTest:.
+
+Time: 4.617
+
+OK (1 test)

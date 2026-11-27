@@ -1,0 +1,6 @@
+Unit tests — final source, Gradle testDebugUnitTest
+vn.edu.midterm.cinemamap.ExampleUnitTest: tests=1, failures=0, errors=0
+vn.edu.midterm.cinemamap.map.MapGeometryTest: tests=3, failures=0, errors=0
+vn.edu.midterm.cinemamap.preview.CinemaSceneGeometryTest: tests=9, failures=0, errors=0
+vn.edu.midterm.cinemamap.ui.BookingViewModelTest: tests=4, failures=0, errors=0
+vn.edu.midterm.cinemamap.ui.SeatFilterTest: tests=3, failures=0, errors=0

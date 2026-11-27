@@ -1,0 +1,16 @@
+Lint Debug: 0 errors, 15 warnings
+Warning InconsistentLayout app/src/main/res/layout/activity_cinema_preview.xml:79
+Warning InconsistentLayout app/src/main/res/layout-land/activity_cinema_preview.xml:86
+Warning AndroidGradlePluginVersion gradle/wrapper/gradle-wrapper.properties:5
+Warning AndroidGradlePluginVersion gradle/libs.versions.toml:2
+Warning GradleDependency app/build.gradle.kts:40
+Warning Overdraw app/src/main/res/layout/view_booking_sheet.xml:8
+Warning Overdraw app/src/main/res/layout/view_seat_legend.xml:6
+Warning UnusedResources app/src/main/res/values/colors.xml:3
+Warning UseKtx app/src/main/java/vn/edu/midterm/cinemamap/map/CinemaMapView.kt:360
+Warning UseKtx app/src/main/java/vn/edu/midterm/cinemamap/map/CinemaMapView.kt:477
+Warning UseKtx app/src/main/java/vn/edu/midterm/cinemamap/preview/CinemaMiniMapView.kt:63
+Warning UseKtx app/src/main/java/vn/edu/midterm/cinemamap/preview/CinemaRoomSettings.kt:41
+Warning UseKtx app/src/main/java/vn/edu/midterm/cinemamap/preview/CinemaTrailerPlayer.kt:68
+Warning UseTomlInstead app/build.gradle.kts:40
+Warning ClickableViewAccessibility app/src/main/java/vn/edu/midterm/cinemamap/map/CinemaMapView.kt:174

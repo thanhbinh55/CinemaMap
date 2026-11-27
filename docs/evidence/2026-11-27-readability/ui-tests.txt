@@ -1,0 +1,7 @@
+
+vn.edu.midterm.cinemamap.BookingSheetTest:....
+vn.edu.midterm.cinemamap.MapNavigationTest:..
+
+Time: 21.556
+
+OK (6 tests)
