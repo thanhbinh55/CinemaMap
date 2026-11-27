@@ -12,7 +12,7 @@
         android:layout_height="28dp"
         android:gravity="center"
         android:importantForAccessibility="no"
-        android:textColor="@color/seat_outline"
+        android:textColor="@color/app_text"
         android:textSize="18sp" />
 
     <TextView

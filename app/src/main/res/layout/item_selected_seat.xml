@@ -6,6 +6,15 @@
     android:gravity="center_vertical"
     android:orientation="horizontal">
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/preview_seat"
+        style="?attr/borderlessButtonStyle"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
+        android:paddingHorizontal="4dp"
+        android:text="@string/preview_3d_short" />
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/locate_seat"
         style="?attr/borderlessButtonStyle"
         android:layout_width="0dp"

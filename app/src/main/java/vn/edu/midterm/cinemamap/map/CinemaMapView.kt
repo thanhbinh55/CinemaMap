@@ -5,14 +5,17 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.RectF
+import android.os.Bundle
+import android.os.Parcelable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
 import androidx.core.animation.doOnEnd
+import androidx.core.os.BundleCompat
 import vn.edu.midterm.cinemamap.R
 import vn.edu.midterm.cinemamap.data.MockCinemaData
 import vn.edu.midterm.cinemamap.model.SeatAvailability
@@ -21,21 +24,33 @@ import vn.edu.midterm.cinemamap.model.SeatType
 class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
     private val geometry = MapGeometry(MockCinemaData.rows)
+    private val screenPath = Path().apply {
+        moveTo(geometry.centerX - 214f, 32f)
+        quadTo(geometry.centerX, 6f, geometry.centerX + 214f, 32f)
+    }
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         strokeWidth = 2f
     }
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.rgb(24, 26, 42)
+        color = context.getColor(R.color.app_text)
         textAlign = Paint.Align.CENTER
     }
-    private val background = Color.rgb(248, 250, 252)
-    private val screenColor = context.getColor(R.color.seat_accent)
+    private val background = context.getColor(R.color.app_background)
+    private val screenColor = context.getColor(R.color.app_navy)
+    private val selectedColor = context.getColor(R.color.seat_accent)
+    private val standardLabelColor = context.getColor(R.color.seat_standard_text)
+    private val vipLabelColor = context.getColor(R.color.seat_vip_text)
+    private val coupleLabelColor = context.getColor(R.color.seat_couple_text)
+    private val occupiedLabelColor = context.getColor(R.color.seat_occupied_text)
+    private val unavailableLabelColor = context.getColor(R.color.seat_unavailable_text)
+    private val miniBackground = context.getColor(R.color.app_background)
+    private val miniOutline = context.getColor(R.color.app_divider)
+    private val miniViewportColor = context.getColor(R.color.map_viewport)
     private val standardColor = context.getColor(R.color.seat_standard)
     private val vipColor = context.getColor(R.color.seat_vip)
     private val coupleColor = context.getColor(R.color.seat_couple)
     private val unavailableColor = context.getColor(R.color.seat_unavailable)
     private val occupiedColor = context.getColor(R.color.seat_occupied)
-    private val outlineColor = context.getColor(R.color.seat_outline)
     private val screenLabel = resources.getString(R.string.screen_label)
     private val typeLabels = mapOf(
         SeatType.STANDARD to resources.getString(R.string.seat_standard),
@@ -66,12 +81,22 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
     private val miniPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val seatLabelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textAlign = Paint.Align.CENTER
-        textSize = 12f
         isFakeBoldText = true
+    }
+    private data class SeatLabelMetrics(val textSize: Float, val baselineOffset: Float)
+
+    private val seatLabels = geometry.rows.flatMap { it.seats }.associate { position ->
+        seatLabelPaint.textSize = 11.2f
+        val labelWidth = seatLabelPaint.measureText(position.seat.id)
+        val availableWidth = position.width - 8f
+        if (labelWidth > availableWidth) seatLabelPaint.textSize *= availableWidth / labelWidth
+        position.seat.id to SeatLabelMetrics(seatLabelPaint.textSize,
+            -(seatLabelPaint.ascent() + seatLabelPaint.descent()) / 2f)
     }
     private var locatedSeatId: String? = null
     private var camera: CameraTransform? = null
     private var fitCamera: CameraTransform? = null
+    private var pendingCameraState: FloatArray? = null
     private var resetAnimator: ValueAnimator? = null
     private var previousFocusX = 0f
     private var previousFocusY = 0f
@@ -105,7 +130,6 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
                 val point = transform.viewToWorld(event.x, event.y)
                 val hit = geometry.findSeatAt(point)
 
-                Log.d("CinemaMap", hit?.seat?.id ?: "Không trúng ghế")
                 if (hit != null && matchingSeatIds?.contains(hit.seat.id) != false) {
                     onSeatClickListener?.invoke(hit.seat)
                 }
@@ -151,8 +175,10 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
                 resetAnimator?.cancel()
-                locatedSeatId = null
-                invalidate()
+                if (locatedSeatId != null) {
+                    locatedSeatId = null
+                    invalidate()
+                }
                 hadMultiplePointers = false
                 remainingPointerId = null
             }
@@ -207,6 +233,42 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         } else {
             fitCamera
         }
+        restoreCameraWhenReady()
+    }
+
+    override fun onSaveInstanceState(): Parcelable = Bundle().apply {
+        putParcelable("super", super.onSaveInstanceState())
+        val current = camera
+        val fit = fitCamera
+        val snapshot = if (current != null && fit != null && fit.scale > 0f) {
+            val center = current.viewToWorld(width / 2f, height / 2f)
+            floatArrayOf(current.scale / fit.scale, center.x, center.y, if (current == fit) 1f else 0f)
+        } else pendingCameraState
+        putFloatArray("camera", snapshot)
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        if (state !is Bundle) {
+            super.onRestoreInstanceState(state)
+            return
+        }
+        super.onRestoreInstanceState(BundleCompat.getParcelable(state, "super", Parcelable::class.java))
+        pendingCameraState = state.getFloatArray("camera")?.takeIf {
+            it.size == 4 && it.all(Float::isFinite) && it[0] > 0f
+        }
+        restoreCameraWhenReady()
+    }
+
+    private fun restoreCameraWhenReady() {
+        val snapshot = pendingCameraState ?: return
+        val fit = fitCamera ?: return
+        if (width <= 0 || height <= 0) return
+        camera = if (snapshot[3] == 1f) fit else {
+            val scale = fit.scale * snapshot[0].coerceIn(0.8f, 5f)
+            boundedCamera(scale, width / 2f - snapshot[1] * scale, height / 2f - snapshot[2] * scale)
+        }
+        pendingCameraState = null
+        invalidate()
     }
 
     override fun onDetachedFromWindow() {
@@ -298,8 +360,17 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         val checkpoint = canvas.save()
         canvas.translate(transform.offsetX, transform.offsetY)
         canvas.scale(transform.scale, transform.scale)
-        drawScreen(canvas)
+        drawRoom(canvas, transform)
+        canvas.restoreToCount(checkpoint)
+        drawMiniMap(canvas, transform)
+    }
 
+    private fun drawRoom(canvas: Canvas, transform: CameraTransform) {
+        drawScreen(canvas)
+        val visibleLeft = -transform.offsetX / transform.scale
+        val visibleTop = -transform.offsetY / transform.scale
+        val visibleRight = (width - transform.offsetX) / transform.scale
+        val visibleBottom = (height - transform.offsetY) / transform.scale
         var previousType: SeatType? = null
         for (row in geometry.rows) {
             if (previousType != row.type) {
@@ -309,20 +380,24 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
             textPaint.textSize = 19f
             canvas.drawText(row.label, 17f, row.top + 23f, textPaint)
             for (position in row.seats) {
+                if (position.seat.id != locatedSeatId && (position.left > visibleRight ||
+                    position.left + position.width < visibleLeft || position.top > visibleBottom ||
+                    position.top + geometry.seatHeight < visibleTop)) continue
                 val matching = matchingSeatIds?.contains(position.seat.id) != false
-                val alpha = if (matching) 255 else 55
-                drawSeat(canvas, position, alpha)
+                drawSeat(canvas, position, if (matching) 255 else 55)
             }
             previousType = row.type
         }
-        canvas.restoreToCount(checkpoint)
-        drawMiniMap(canvas, transform)
     }
 
     private fun drawScreen(canvas: Canvas) {
         paint.color = screenColor
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = 7f
+        paint.strokeCap = Paint.Cap.ROUND
+        canvas.drawPath(screenPath, paint)
+        paint.strokeCap = Paint.Cap.BUTT
         paint.style = Paint.Style.FILL
-        canvas.drawRect(geometry.centerX - 214f, 22f, geometry.centerX + 214f, 29f, paint)
         textPaint.textSize = 25f
         canvas.drawText(screenLabel, geometry.centerX, 58f, textPaint)
     }
@@ -330,7 +405,7 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
     private fun seatColor(position: SeatPosition): Int {
         val seat = position.seat
         return when {
-            seat.id in selectedSeatIds -> screenColor
+            seat.id in selectedSeatIds -> selectedColor
             seat.availability == SeatAvailability.BOOKED -> occupiedColor
             seat.availability == SeatAvailability.UNAVAILABLE -> unavailableColor
             seat.type == SeatType.VIP -> vipColor
@@ -348,33 +423,30 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         val middleY = (top + bottom) / 2f
         val seat = position.seat
         val selected = seat.id in selectedSeatIds
-        val showCode = (camera?.scale ?: 0f) * position.width >= 30f * resources.displayMetrics.density
 
         paint.style = Paint.Style.FILL
         paint.color = seatColor(position)
         paint.alpha = alpha
         canvas.drawRoundRect(left, top, right, bottom, 4f, 4f, paint)
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = if (selected) 2.5f else 1f
-        paint.color = if (selected) screenColor else outlineColor
-        paint.alpha = alpha
-        canvas.drawRoundRect(left + 1f, top + 1f, right - 1f, bottom - 1f, 4f, 4f, paint)
-
         if (seat.id == locatedSeatId) {
-            paint.color = screenColor
+            paint.style = Paint.Style.STROKE
+            paint.color = selectedColor
             paint.strokeWidth = 3f
             canvas.drawCircle(middleX, middleY, position.width / 2f + 6f, paint)
         }
 
-        seatLabelPaint.color = if (selected || seat.availability == SeatAvailability.BOOKED) {
-            Color.WHITE
-        } else {
-            outlineColor
+        seatLabelPaint.color = when {
+            selected -> Color.WHITE
+            seat.availability == SeatAvailability.BOOKED -> occupiedLabelColor
+            seat.availability == SeatAvailability.UNAVAILABLE -> unavailableLabelColor
+            seat.type == SeatType.VIP -> vipLabelColor
+            seat.type == SeatType.COUPLE -> coupleLabelColor
+            else -> standardLabelColor
         }
         seatLabelPaint.alpha = alpha
-        if (showCode) {
-            canvas.drawText(seat.id, middleX, middleY + 4f, seatLabelPaint)
-        }
+        val label = seatLabels.getValue(seat.id)
+        seatLabelPaint.textSize = label.textSize
+        canvas.drawText(seat.id, middleX, middleY + label.baselineOffset, seatLabelPaint)
         paint.alpha = 255
     }
 
@@ -394,7 +466,11 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         val margin = 8f * density
         miniBounds.set(width - margin - miniWidth, margin, width - margin, margin + miniHeight)
         miniPaint.style = Paint.Style.FILL
-        miniPaint.color = Color.rgb(15, 23, 42)
+        miniPaint.color = miniBackground
+        canvas.drawRoundRect(miniBounds, 8f * density, 8f * density, miniPaint)
+        miniPaint.style = Paint.Style.STROKE
+        miniPaint.color = miniOutline
+        miniPaint.strokeWidth = density
         canvas.drawRoundRect(miniBounds, 8f * density, 8f * density, miniPaint)
         val originX = miniBounds.left + 6f * density
         val originY = miniBounds.top + 6f * density
@@ -402,9 +478,10 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         canvas.translate(originX, originY)
         canvas.scale(miniScale, miniScale)
         canvas.clipRect(0f, 0f, geometry.width, geometry.height)
-        miniPaint.strokeWidth = 5f
-        miniPaint.color = Color.WHITE
-        canvas.drawLine(geometry.centerX - 214f, 25f, geometry.centerX + 214f, 25f, miniPaint)
+        miniPaint.strokeWidth = 7f
+        miniPaint.color = screenColor
+        miniPaint.style = Paint.Style.STROKE
+        canvas.drawPath(screenPath, miniPaint)
         for (row in geometry.rows) {
             for (position in row.seats) {
                 miniPaint.style = Paint.Style.FILL
@@ -422,9 +499,16 @@ class CinemaMapView(context: Context, attrs: AttributeSet?) : View(context, attr
         )
         miniPaint.alpha = 255
         miniPaint.style = Paint.Style.STROKE
-        miniPaint.color = Color.rgb(250, 204, 21)
+        miniPaint.color = miniViewportColor
         miniPaint.strokeWidth = 2f * density / miniScale
         canvas.drawRect(miniViewport, miniPaint)
         canvas.restoreToCount(saved)
+    }
+
+    fun highlightSeat(seatId: String) {
+        if (geometry.rows.any { row -> row.seats.any { it.seat.id == seatId } }) {
+            locatedSeatId = seatId
+            invalidate()
+        }
     }
 }

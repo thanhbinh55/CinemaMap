@@ -18,7 +18,7 @@ class SeatFilterTest {
 
     @Test
     fun filtersCombineAndKeepSelectionsAndTotals() {
-        val model = BookingViewModel()
+        val model = BookingViewModel(androidx.lifecycle.SavedStateHandle())
         model.onSeatTapped(standard)
         model.setTypeFilter(SeatType.VIP)
         assertEquals(108, matching(model).size)
@@ -39,7 +39,7 @@ class SeatFilterTest {
 
     @Test
     fun availableFilterUpdatesImmediatelyAfterSelection() {
-        val model = BookingViewModel()
+        val model = BookingViewModel(androidx.lifecycle.SavedStateHandle())
         model.setStatusFilter(SeatStatusFilter.AVAILABLE)
         assertEquals(181, matching(model).size)
         model.onSeatTapped(standard)
@@ -52,7 +52,7 @@ class SeatFilterTest {
 
     @Test
     fun emptyCombinationAndBookedSeatsDoNotChangeSelection() {
-        val model = BookingViewModel()
+        val model = BookingViewModel(androidx.lifecycle.SavedStateHandle())
         model.setTypeFilter(SeatType.COUPLE)
         model.setStatusFilter(SeatStatusFilter.SELECTED)
         assertTrue(matching(model).isEmpty())

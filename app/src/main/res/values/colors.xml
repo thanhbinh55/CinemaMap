@@ -2,11 +2,24 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="seat_standard">#DBEAFE</color>
-    <color name="seat_vip">#DDD6FE</color>
-    <color name="seat_couple">#CCFBF1</color>
-    <color name="seat_occupied">#64748B</color>
-    <color name="seat_unavailable">#FDE68A</color>
-    <color name="seat_outline">#334155</color>
-    <color name="seat_accent">#4338CA</color>
+    <color name="app_background">#FFFFFF</color>
+    <color name="app_navy">#002366</color>
+    <color name="app_text">#102B4E</color>
+    <color name="app_text_secondary">#51647E</color>
+    <color name="app_soft_blue">#E8EFFB</color>
+    <color name="app_divider">#D9E2F0</color>
+    <color name="seat_standard">#CDDFF8</color>
+    <color name="seat_vip">#D5C8EC</color>
+    <color name="seat_couple">#BFE3DB</color>
+    <color name="seat_occupied">#9CA8B8</color>
+    <color name="seat_unavailable">#F3C9AD</color>
+    <color name="seat_standard_text">#315D93</color>
+    <color name="seat_vip_text">#624383</color>
+    <color name="seat_couple_text">#276555</color>
+    <color name="seat_occupied_text">#2D3A4B</color>
+    <color name="seat_unavailable_text">#86482B</color>
+    <color name="seat_outline">#758BA8</color>
+    <color name="seat_accent">#0057FF</color>
+    <color name="map_viewport">#002366</color>
+    <color name="preview_3d_background">#101923</color>
 </resources>

@@ -1,76 +1,91 @@
 package vn.edu.midterm.cinemamap.ui
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import vn.edu.midterm.cinemamap.data.MockCinemaData
 import vn.edu.midterm.cinemamap.model.Seat
 import vn.edu.midterm.cinemamap.model.SeatAvailability
 import vn.edu.midterm.cinemamap.model.SeatType
 
-class BookingViewModel : ViewModel() {
+class BookingViewModel(private val savedState: SavedStateHandle) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(BookingUiState())
+    private val _uiState = MutableStateFlow(restoreState())
     val uiState: StateFlow<BookingUiState> = _uiState.asStateFlow()
 
-    /**
-     * Xử lý sự kiện khi người dùng chạm vào một ghế trên sơ đồ.
-     */
+    private fun restoreState(): BookingUiState {
+        val seats = MockCinemaData.rows.flatMap { it.seats }.associateBy { it.id }
+        val ids = savedState.get<ArrayList<String>>("booking.selected").orEmpty().distinct()
+        val selected = ids.mapNotNull(seats::get).filter { it.availability == SeatAvailability.AVAILABLE }
+        val filter = SeatFilter(
+            type = SeatType.values().firstOrNull { it.name == savedState.get<String>("booking.type") },
+            status = SeatStatusFilter.values().firstOrNull { it.name == savedState.get<String>("booking.status") }
+        )
+        return calculateNewState(BookingUiState(filter = filter), selected,
+            savedState.get<String>("booking.inspected")?.let(seats::get))
+    }
+
+    private fun updateState(transform: (BookingUiState) -> BookingUiState) {
+        _uiState.update(transform)
+        val state = _uiState.value
+        // Persist IDs/enum names, then derive totals from the fixture when restored.
+        savedState["booking.selected"] = ArrayList(state.selectedSeats.map { it.id })
+        savedState["booking.inspected"] = state.inspectedSeat?.id
+        savedState["booking.type"] = state.filter.type?.name
+        savedState["booking.status"] = state.filter.status?.name
+    }
+
+    /** Xem thông tin/3D độc lập với chọn vé; cho phép xem cả ghế ngoài bộ lọc. */
+    fun inspectSeat(seat: Seat) {
+        updateState { it.copy(inspectedSeat = seat) }
+    }
+
+    /** Chỉ ghế trống khớp lọc được bật/tắt lựa chọn. */
     fun onSeatTapped(seat: Seat) {
-        _uiState.update { currentState ->
+        updateState { currentState ->
             val isSelected = currentState.selectedSeats.any { it.id == seat.id }
-            if (!currentState.filter.matches(seat, isSelected)) return@update currentState
+            if (!currentState.filter.matches(seat, isSelected)) return@updateState currentState
             if (seat.availability != SeatAvailability.AVAILABLE) {
-                return@update currentState.copy(inspectedSeat = seat)
+                return@updateState currentState.copy(inspectedSeat = seat)
             }
-            val isAlreadySelected = currentState.selectedSeats.any { it.id == seat.id }
-            val newSelectedSeats = if (isAlreadySelected) {
+            val newSelectedSeats = if (isSelected) {
                 currentState.selectedSeats.filterNot { it.id == seat.id }
             } else {
-                // Chưa chọn -> Thêm vào cuối danh sách
                 currentState.selectedSeats + seat
             }
 
-            // 3. Tính toán lại các thông số dẫn xuất
             calculateNewState(currentState, newSelectedSeats, inspectedSeat = seat)
         }
     }
 
-    /**
-     * Xử lý sự kiện khi người dùng bấm nút "Xóa" một ghế từ Bottom Sheet.
-     */
     fun removeSeat(seatId: String) {
-        _uiState.update { currentState ->
+        updateState { currentState ->
             val newSelectedSeats = currentState.selectedSeats.filterNot { it.id == seatId }
-            // Nếu ghế vừa bị xóa trùng với inspectedSeat thì có thể xóa hoặc giữ nguyên
             val newInspected = if (currentState.inspectedSeat?.id == seatId) null else currentState.inspectedSeat
             calculateNewState(currentState, newSelectedSeats, inspectedSeat = newInspected)
         }
     }
 
-    /**
-     * Xóa toàn bộ lựa chọn.
-     */
     fun clearSelection() {
-        _uiState.update { currentState ->
+        updateState { currentState ->
             calculateNewState(currentState, emptyList(), inspectedSeat = null)
         }
     }
 
-    /**
-     * Hàm phụ trợ tính toán số lượng chỗ và tổng tiền từ danh sách ghế đã chọn.
-     */
+    /** Đổi loại lọc và giữ nguyên danh sách đang chọn. */
     fun setTypeFilter(type: SeatType?) {
-        _uiState.update { it.copy(filter = it.filter.copy(type = type)) }
+        updateState { it.copy(filter = it.filter.copy(type = type)) }
     }
 
     fun setStatusFilter(status: SeatStatusFilter?) {
-        _uiState.update { it.copy(filter = it.filter.copy(status = status)) }
+        updateState { it.copy(filter = it.filter.copy(status = status)) }
     }
 
     fun clearFilters() {
-        _uiState.update { it.copy(filter = SeatFilter()) }
+        updateState { it.copy(filter = SeatFilter()) }
     }
 
     private fun calculateNewState(
@@ -79,9 +94,7 @@ class BookingViewModel : ViewModel() {
         inspectedSeat: Seat?
     ): BookingUiState {
         val totalSeats = selectedSeats.size
-        // Mỗi ghế có it.type.capacity (Standard/VIP = 1, Couple = 2)
         val totalSpots = selectedSeats.sumOf { it.type.capacity }
-        // Mỗi ghế có it.type.priceVnd (85.000, 110.000, 190.000)
         val totalPrice = selectedSeats.sumOf { it.type.priceVnd }
 
         return currentState.copy(

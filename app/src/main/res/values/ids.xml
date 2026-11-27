@@ -1,0 +1,5 @@
+<resources>
+    <item name="preview_scene" type="id" />
+    <item name="preview_minimap" type="id" />
+    <item name="preview_map_picker" type="id" />
+</resources>

@@ -18,6 +18,18 @@ import vn.edu.midterm.cinemamap.ui.BookingViewModel
 
 @RunWith(AndroidJUnit4::class)
 class BookingSheetTest {
+    private fun waitForExpandedSheet(scenario: ActivityScenario<MainActivity>) {
+        val deadline = SystemClock.uptimeMillis() + 10_000
+        var state = -1
+        while (SystemClock.uptimeMillis() < deadline) {
+            scenario.onActivity {
+                state = BottomSheetBehavior.from(it.findViewById<LinearLayout>(R.id.booking_sheet)).state
+            }
+            if (state == BottomSheetBehavior.STATE_EXPANDED) return
+            SystemClock.sleep(50)
+        }
+        fail("Sheet did not finish expanding; state=$state")
+    }
     @Test
     fun filtersKeepSelectedSeatsInSheetAndSurviveResetAndRecreation() {
         ActivityScenario.launch(MainActivity::class.java).use { scenario ->
@@ -33,14 +45,15 @@ class BookingSheetTest {
             ).inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog())
                 .perform(androidx.test.espresso.action.ViewActions.click())
             scenario.onActivity { activity ->
-                assertTrue(activity.findViewById<TextView>(R.id.filter_result).text.contains("108"))
+                assertEquals(View.GONE, activity.findViewById<View>(R.id.filter_empty_message).visibility)
                 val map = activity.findViewById<CinemaMapView>(R.id.cinema_map)
+                assertEquals(108, map.matchingSeatIds!!.size)
                 assertFalse(map.matchingSeatIds!!.contains("A01"))
                 assertEquals(setOf("A01"), map.selectedSeatIds)
                 activity.findViewById<View>(R.id.reset_view).performClick()
                 activity.findViewById<View>(R.id.toggle_sheet).performClick()
             }
-            SystemClock.sleep(600)
+            waitForExpandedSheet(scenario)
             scenario.onActivity { activity ->
                 val list = activity.findViewById<RecyclerView>(R.id.selected_seats)
                 val row = list.findViewHolderForAdapterPosition(0)!!.itemView
@@ -62,12 +75,14 @@ class BookingSheetTest {
             SystemClock.sleep(150)
             scenario.onActivity { activity ->
                 assertEquals(activity.getString(R.string.filter_empty),
-                    activity.findViewById<TextView>(R.id.filter_result).text.toString())
+                    activity.findViewById<TextView>(R.id.filter_empty_message).text.toString())
+                assertEquals(View.VISIBLE, activity.findViewById<View>(R.id.filter_empty_message).visibility)
                 activity.findViewById<View>(R.id.clear_filters).performClick()
             }
             SystemClock.sleep(150)
             scenario.onActivity { activity ->
                 assertEquals(196, activity.findViewById<CinemaMapView>(R.id.cinema_map).matchingSeatIds!!.size)
+                assertEquals(View.GONE, activity.findViewById<View>(R.id.filter_empty_message).visibility)
                 assertEquals(setOf("A01"), activity.findViewById<CinemaMapView>(R.id.cinema_map).selectedSeatIds)
             }
         }
@@ -85,7 +100,7 @@ class BookingSheetTest {
                     .forEach { model.onSeatTapped(it) }
                 activity.findViewById<View>(R.id.toggle_sheet).performClick()
             }
-            SystemClock.sleep(600)
+            waitForExpandedSheet(scenario)
             scenario.onActivity { activity ->
                 val map = activity.findViewById<CinemaMapView>(R.id.cinema_map)
                 val sheet = activity.findViewById<LinearLayout>(R.id.booking_sheet)
@@ -125,6 +140,17 @@ class BookingSheetTest {
             ))
             androidx.test.espresso.Espresso.onView(
                 androidx.test.espresso.matcher.ViewMatchers.withText(R.string.legend_close)
+            ).check(androidx.test.espresso.assertion.ViewAssertions.matches(
+                androidx.test.espresso.matcher.ViewMatchers.isDisplayed()
+            ))
+            val instrumentation = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
+            val screenshot = instrumentation.uiAutomation.takeScreenshot()
+            java.io.File(instrumentation.targetContext.cacheDir, "legend-bold.png").outputStream().use {
+                screenshot.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
+            }
+            screenshot.recycle()
+            androidx.test.espresso.Espresso.onView(
+                androidx.test.espresso.matcher.ViewMatchers.withText(R.string.legend_close)
             ).perform(androidx.test.espresso.action.ViewActions.click())
             scenario.onActivity { activity ->
                 assertEquals(setOf("A01"),
@@ -150,7 +176,7 @@ class BookingSheetTest {
                 listOf("A05", "E08", "K03").forEach { model.onSeatTapped(seats.getValue(it)) }
                 activity.findViewById<View>(R.id.toggle_sheet).performClick()
             }
-            SystemClock.sleep(800)
+            waitForExpandedSheet(scenario)
             scenario.onActivity { activity ->
                 val sheet = activity.findViewById<LinearLayout>(R.id.booking_sheet)
                 assertEquals(BottomSheetBehavior.STATE_EXPANDED, BottomSheetBehavior.from(sheet).state)
@@ -167,7 +193,7 @@ class BookingSheetTest {
                 val summary = activity.findViewById<TextView>(R.id.booking_summary).text.toString()
                 assertTrue(summary.contains("3 ghế"))
                 assertTrue(summary.contains("4 chỗ"))
-                assertTrue(summary.contains("385"))
+                assertTrue(activity.findViewById<TextView>(R.id.booking_total_price).text.contains("385"))
                 val list = activity.findViewById<RecyclerView>(R.id.selected_seats)
                 assertEquals(3, list.adapter!!.itemCount)
                 list.findViewHolderForAdapterPosition(0)!!.itemView
@@ -183,18 +209,25 @@ class BookingSheetTest {
                 assertEquals(setOf("E08", "K03"), map.selectedSeatIds)
                 val summary = activity.findViewById<TextView>(R.id.booking_summary).text.toString()
                 assertTrue(summary.contains("2 ghế"))
-                assertTrue(summary.contains("300"))
+                assertTrue(activity.findViewById<TextView>(R.id.booking_total_price).text.contains("300"))
                 activity.findViewById<View>(R.id.reset_view).performClick()
             }
             SystemClock.sleep(350)
             scenario.recreate()
             SystemClock.sleep(500)
+            waitForExpandedSheet(scenario)
             scenario.onActivity { activity ->
                 assertEquals(setOf("E08", "K03"),
                     activity.findViewById<CinemaMapView>(R.id.cinema_map).selectedSeatIds)
                 assertEquals(BottomSheetBehavior.STATE_EXPANDED,
                     BottomSheetBehavior.from(activity.findViewById<LinearLayout>(R.id.booking_sheet)).state)
             }
+            val instrumentation = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
+            val screenshot = instrumentation.uiAutomation.takeScreenshot()
+            java.io.File(instrumentation.targetContext.cacheDir, "navy-selection.png").outputStream().use {
+                screenshot.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
+            }
+            screenshot.recycle()
         }
     }
 }

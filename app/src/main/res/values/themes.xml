@@ -1,8 +1,33 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.CinemaMap" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+<resources>
+    <!-- A white interface in both system modes, with quiet navy controls. -->
+    <style name="Base.Theme.CinemaMap" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:colorBackground">@color/app_background</item>
+        <item name="android:textColorPrimary">@color/app_text</item>
+        <item name="android:textColorSecondary">@color/app_text_secondary</item>
+        <item name="colorPrimary">@color/app_navy</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/app_soft_blue</item>
+        <item name="colorOnPrimaryContainer">@color/app_navy</item>
+        <item name="colorSecondary">@color/app_navy</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryContainer">@color/app_soft_blue</item>
+        <item name="colorOnSecondaryContainer">@color/app_navy</item>
+        <item name="colorTertiary">@color/app_navy</item>
+        <item name="colorOnTertiary">@color/white</item>
+        <item name="colorTertiaryContainer">@color/app_soft_blue</item>
+        <item name="colorOnTertiaryContainer">@color/app_navy</item>
+        <item name="colorSurface">@color/app_background</item>
+        <item name="colorOnSurface">@color/app_text</item>
+        <item name="colorOnSurfaceVariant">@color/app_text_secondary</item>
+        <item name="colorSurfaceVariant">@color/app_soft_blue</item>
+        <item name="colorSurfaceContainerLowest">@color/app_background</item>
+        <item name="colorSurfaceContainerLow">@color/app_background</item>
+        <item name="colorSurfaceContainer">@color/app_background</item>
+        <item name="colorSurfaceContainerHigh">@color/app_background</item>
+        <item name="colorSurfaceContainerHighest">@color/app_background</item>
+        <item name="elevationOverlayEnabled">false</item>
+        <item name="colorOutline">@color/seat_outline</item>
+        <item name="colorOutlineVariant">@color/app_divider</item>
     </style>
 
     <style name="Theme.CinemaMap" parent="Base.Theme.CinemaMap" />

@@ -23,6 +23,7 @@
                     android:layout_height="wrap_content"
                     android:paddingTop="8dp"
                     android:text="@string/mock_showtime"
+                    android:textColor="@color/app_text_secondary"
                     android:textSize="13sp" />
 
                 <LinearLayout
@@ -35,8 +36,35 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColor="@color/app_text"
                         android:textSize="16sp"
                         android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/booking_total_price"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:gravity="end"
+                        android:textColor="@color/app_navy"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/inspected_seat"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingVertical="8dp"
+                        android:maxLines="2"
+                        android:ellipsize="end"
+                        android:textColor="@color/app_text_secondary"
+                        android:textSize="13sp" />
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/toggle_sheet"
                         style="?attr/borderlessButtonStyle"
@@ -44,16 +72,15 @@
                         android:layout_height="wrap_content"
                         android:text="@string/expand_sheet" />
                 </LinearLayout>
-
-                <TextView
-                    android:id="@+id/inspected_seat"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="8dp"
-                    android:maxLines="2"
-                    android:ellipsize="end"
-                    android:textSize="13sp" />
             </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/open_3d_preview"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:text="@string/preview_3d_open" />
 
             <TextView
                 android:id="@+id/empty_selection"

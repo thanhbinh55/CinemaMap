@@ -23,7 +23,8 @@ data class SelectedSeatItem(val seat: Seat, val outsideFilter: Boolean)
 
 class SelectedSeatAdapter(
     private val onLocate: (Seat) -> Unit,
-    private val onRemove: (String) -> Unit
+    private val onRemove: (String) -> Unit,
+    private val onPreview: (Seat) -> Unit
 ) : ListAdapter<SelectedSeatItem, SelectedSeatAdapter.Holder>(object : DiffUtil.ItemCallback<SelectedSeatItem>() {
     override fun areItemsTheSame(old: SelectedSeatItem, new: SelectedSeatItem) = old.seat.id == new.seat.id
     override fun areContentsTheSame(old: SelectedSeatItem, new: SelectedSeatItem) = old == new
@@ -33,6 +34,7 @@ class SelectedSeatAdapter(
     class Holder(view: View) : RecyclerView.ViewHolder(view) {
         val locate: MaterialButton = view.findViewById(R.id.locate_seat)
         val remove: MaterialButton = view.findViewById(R.id.remove_seat)
+        val preview: MaterialButton = view.findViewById(R.id.preview_seat)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder =
@@ -51,7 +53,9 @@ class SelectedSeatAdapter(
         }
         holder.locate.contentDescription = context.getString(R.string.locate_seat_description, seat.id)
         holder.remove.contentDescription = context.getString(R.string.remove_seat_description, seat.id)
+        holder.preview.contentDescription = context.getString(R.string.preview_3d_open_seat, seat.id)
         holder.locate.setOnClickListener { onLocate(seat) }
         holder.remove.setOnClickListener { onRemove(seat.id) }
+        holder.preview.setOnClickListener { onPreview(seat) }
     }
 }
