@@ -1,0 +1,27 @@
+
+vn.edu.midterm.cinemamap.BookingSheetTest:....
+vn.edu.midterm.cinemamap.CinemaPreviewTest:..
+Error in frontAndBackSeatsHaveDifferentScreenSizeAndCameraSurvivesRecreation(vn.edu.midterm.cinemamap.CinemaPreviewTest):
+java.lang.AssertionError: The actual screen should show the campfire, not an empty or fallback surface
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at vn.edu.midterm.cinemamap.CinemaPreviewTest.assertScenePixels(CinemaPreviewTest.kt:279)
+	at vn.edu.midterm.cinemamap.CinemaPreviewTest.frontAndBackSeatsHaveDifferentScreenSizeAndCameraSurvivesRecreation(CinemaPreviewTest.kt:110)
+..
+vn.edu.midterm.cinemamap.CinemaPreviewUpgradeTest:....
+vn.edu.midterm.cinemamap.CinemaTrailerTest:..
+vn.edu.midterm.cinemamap.ExampleInstrumentedTest:.
+vn.edu.midterm.cinemamap.MapInteractionTest:...
+vn.edu.midterm.cinemamap.MapNavigationTest:..
+
+Time: 423.261
+There was 1 failure:
+1) frontAndBackSeatsHaveDifferentScreenSizeAndCameraSurvivesRecreation(vn.edu.midterm.cinemamap.CinemaPreviewTest)
+java.lang.AssertionError: The actual screen should show the campfire, not an empty or fallback surface
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at vn.edu.midterm.cinemamap.CinemaPreviewTest.assertScenePixels(CinemaPreviewTest.kt:279)
+	at vn.edu.midterm.cinemamap.CinemaPreviewTest.frontAndBackSeatsHaveDifferentScreenSizeAndCameraSurvivesRecreation(CinemaPreviewTest.kt:110)
+
+FAILURES!!!
+Tests run: 21,  Failures: 1

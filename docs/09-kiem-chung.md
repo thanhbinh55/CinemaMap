@@ -1,75 +1,90 @@
-# Kiểm chứng đợt chốt mã 27–28/11/2026
+# Báo cáo kiểm chứng
 
-Tài liệu ghi kết quả thật của Agent, không thay cho xác nhận hiểu mã/dùng thử của sinh viên hoặc điểm do giảng viên chấm. Bản nguồn: [`f3e32f9`](https://github.com/thanhbinh55/CinemaMap/commit/f3e32f91348b21418246b3bdb857787f3988ef7c). Commit tài liệu sau đó không đổi mã app. Log nguồn sạch bên dưới ghi cùng SHA. Video demo nộp bài được sinh viên thực hiện sau.
+## Phạm vi và phiên bản
 
-## Môi trường và kết quả
+Báo cáo tổng hợp kết quả chạy trên mã ứng dụng tại [commit f3e32f9](https://github.com/thanhbinh55/CinemaMap/commit/f3e32f91348b21418246b3bdb857787f3988ef7c) và đợt rà soát ngày 28/11/2026. Đợt biên tập hồ sơ không thay đổi mã runtime của ứng dụng. Kiểm thử ảnh 3D được điều chỉnh cách chờ khung hình; các ngưỡng kiểm tra ảnh và phép so sánh gần/xa được giữ nguyên.
 
-- macOS Apple Silicon; Android Studio JBR/JDK 25; Gradle 9.6.0; AGP 9.4.1; SDK 37.
-- Pixel_7 emulator, `sdk_gphone16k_arm64`, Android API 37. Đây không phải kết quả trên Samsung thật hay mọi API từ 26 trở lên.
-- Build Debug + APK test: đạt. Unit test: **20 ca đạt**, gồm 19 ca nghiệp vụ/hình học và 1 ca template. [Log unit test](evidence/2026-11-27-final/unit-tests.txt).
-- Lint Debug: **0 lỗi, 15 cảnh báo**. Nhóm cảnh báo: gợi ý dependency/toolchain/KTX, overdraw/unused resource, accessibility của Canvas và ID panel khác nhau có chủ đích ở hai hướng. Không coi “0 lỗi” là “0 cảnh báo”. [Danh sách cảnh báo](evidence/2026-11-27-final/lint.txt).
-- Kiểm thử thiết bị toàn bộ: **21 ca đạt**, gồm 20 ca chức năng và 1 ca template. [Log thiết bị](evidence/2026-11-27-final/device-tests.txt).
-- Build từ clone nguồn sạch: **đạt** từ clone local `--no-hardlinks` của commit mã nguồn, không sao chép build/cache hoặc local.properties; 79 task thực thi. Build APK app/test + unit test + lint đều thành công. [Log clone sạch](evidence/2026-11-27-final/clean-build.txt).
-- Đo mẫu pan: **đã đo**, 120 frame; jank theo gfxinfo **114/120 (95%)**; P50 **57 ms**, P95 **150 ms**, P99 **200 ms**. Khoảng DrawStart→SyncQueued P50 **1.852 ms** (không phải toàn bộ frame). [Raw gfxinfo](evidence/2026-11-27-final/pan-gfxinfo.txt), [ảnh sau pan](evidence/2026-11-27-final/pan-map.png). **Chưa đạt mục tiêu nội bộ 60 Hz ở mẫu Debug/emulator này**; không tự chốt yêu cầu độ mượt là đạt. Cần dùng thử/trace trên Samsung trước nộp nếu còn giật.
+Các kết quả được trình bày theo từng lần chạy. Kết quả kỳ vọng của một ca và kết quả đã thực thi là hai thông tin riêng biệt.
 
-[Log build workspace](evidence/2026-11-27-final/build.txt).
+## Môi trường
 
-## Lệnh và minh chứng
+- macOS Apple Silicon; JDK 25 đi kèm Android Studio.
+- Gradle Wrapper 9.6.0; Android Gradle Plugin 9.4.1; Android SDK 37.
+- Máy ảo `emulator-5554`, model `sdk_gphone16k_arm64`, Android API 37.
+- Mạng và cache công cụ đã được cấu hình tại môi trường kiểm chứng. Tham số `--offline` trong log sử dụng cache có sẵn.
+
+## Kết quả đã thực thi
+
+| Nội dung | Kết quả | Minh chứng |
+| --- | --- | --- |
+| Build APK Debug và APK kiểm thử | Thành công | [Build](evidence/2026-11-28-submission/build.txt), [build APK kiểm thử sau điều chỉnh](evidence/2026-11-28-submission/test-apk-build.txt) |
+| Unit test chạy mới | 20/20 đạt; gồm 19 ca chức năng và 1 ca mẫu | [Tổng hợp XML](evidence/2026-11-28-submission/unit-tests.txt), [log chạy mới](evidence/2026-11-28-submission/checks.txt) |
+| Lint Debug | 0 lỗi; 14 mục Warning theo báo cáo XML | [Danh sách](evidence/2026-11-28-submission/lint.txt) |
+| Kiểm thử thiết bị, lượt đầu | 20/21 đạt; ca ảnh góc nhìn gần/xa không đạt | [Log đầy đủ](evidence/2026-11-28-submission/device-tests-first.txt) |
+| Ca ảnh 3D sau điều chỉnh chờ | Chạy riêng đạt 1/1 | [Log](evidence/2026-11-28-submission/scene-pixel-retest.txt) |
+| Kiểm thử thiết bị, lượt tiếp theo | 20/21 đạt; ca so sánh A/B qua dựng lại Activity không đạt | [Log đầy đủ](evidence/2026-11-28-submission/device-tests-final.txt) |
+| Ca A/B chạy riêng | Không đạt, 1 ca/1 lỗi | [Log](evidence/2026-11-28-submission/comparison-retest.txt) |
+| Build từ nguồn sạch, mã f3e32f9 | Thành công; clone local không sao chép build hoặc local.properties | [Log nguồn sạch](evidence/2026-11-27-final/clean-build.txt) |
+| Video minh họa | 289 giây; có giọng nam tiếng Việt; luồng hình giữ nguyên khi ghép âm thanh | [Thông số](evidence/2026-11-28-submission/video.json) |
+| Repository | Truy cập API không đăng nhập trả HTTP 200, repository public | [Thông tin kiểm tra](evidence/2026-11-28-submission/repository.json) |
+
+Kết quả 21/21 tại [lần kiểm tra trước](evidence/2026-11-27-final/device-tests.txt) được giữ như bằng chứng lịch sử, không sử dụng thay cho kết quả mới có lỗi. Lượt kiểm tra mới chưa cho phép kết luận toàn bộ bộ tích hợp đạt ổn định.
+
+Các nhóm cảnh báo lint gồm tài nguyên/layout khác nhau giữa hai hướng, phiên bản phụ thuộc, overdraw, gợi ý KTX và accessibility của Custom View. Số 14 ở trên là số mục Warning chính trong XML; không diễn giải build thành công là không có cảnh báo.
+
+## Phạm vi các nhóm kiểm thử
+
+| Nhóm | Nội dung |
+| --- | --- |
+| MapGeometryTest | 196 ID, sức chứa, hình học, tâm ghế và điểm sát trong/ngoài bốn cạnh dưới nhiều camera; khe/lối đi không trúng |
+| BookingViewModelTest / SeatFilterTest | Chọn/bỏ chọn, giá theo loại/cặp, lọc AND/rỗng, giữ lựa chọn ngoài lọc và phục hồi trạng thái hợp lệ |
+| BookingSheetTest, 4 ca | Sheet, danh sách, định vị/xóa, bộ lọc, reset và bố cục |
+| MapNavigationTest, 2 ca | Pan, minimap và vùng tương tác dọc/ngang |
+| MapInteractionTest, 3 ca | Điểm ảnh sau chọn/xóa/lọc, pinch theo tâm và min/max, pan biên, xoay giữ camera/lựa chọn/lọc/Sheet |
+| CinemaSceneGeometryTest, 9 ca | Ánh xạ ghế, hướng camera, ghế đôi, cấu hình và A/B |
+| CinemaPreviewTest, 5 ca | Hình ảnh cảnh, góc nhìn gần/xa, đổi ghế, dựng lại, xoay và quay về |
+| CinemaPreviewUpgradeTest, 4 ca | A/B, ghế đôi, minimap/picker, toàn màn hình và cấu hình; ca A/B còn lỗi trong lượt mới |
+| CinemaTrailerTest, 2 ca | Metadata, chuyển động/pause, vòng đời và lặp video |
+
+Các ca 2D thuộc BookingSheetTest, MapInteractionTest và MapNavigationTest đều đạt trong hai lượt toàn bộ mới. Kiểm thử hủy tiến trình Android thực tế, mọi mức chữ lớn và mọi thiết bị API 26 trở lên chưa được thực hiện đầy đủ.
+
+## Điều chỉnh kiểm thử ảnh và lỗi còn tái hiện
+
+Helper ảnh 3D ban đầu chờ cố định một giây rồi kiểm tra một ảnh. Trạng thái Surface/renderer sẵn sàng không đồng nghĩa frame video đã hiển thị. Helper hiện kiểm tra ảnh trong tối đa tám giây và lưu ảnh chẩn đoán; giữ điều kiện số mẫu màu lửa lớn hơn 20, vùng tối lớn hơn 100 và diện tích nhìn gần lớn hơn hai lần nhìn xa.
+
+Sau thay đổi này, ca ảnh chạy riêng đạt và cả năm ca CinemaPreviewTest đạt trong lượt toàn bộ tiếp theo. Tuy nhiên, ca `comparisonAndCoupleSideSurviveRecreationAndCanBeReplaced` không đạt: kỳ vọng camera F09 nhưng nhận L04/Phải. Chạy riêng vẫn tái hiện lỗi. Báo cáo ghi nhận giới hạn của phần mở rộng A/B; chưa xác định nguyên nhân từ các log hiện có và không ghi nhận lỗi đã được sửa.
+
+## Hiệu năng
+
+`tools/profile_map.py` khởi động task mới ở hướng dọc, reset gfxinfo và thực hiện 16 swipe một ngón, mỗi swipe 240 ms, trên sơ đồ 196 ghế ở mức fit. Mẫu dưới đây được thu sau khi build kết thúc, không chạy đồng thời instrumentation:
+
+| Chỉ số từ gfxinfo | Giá trị |
+| --- | ---: |
+| Tổng frame | 72 |
+| Janky frames | 72/72, 100% |
+| Phân vị 50 theo thống kê gfxinfo | 150 ms |
+| Phân vị 95 | 250 ms |
+| Phân vị 99 | 400 ms |
+
+[Log gfxinfo](evidence/2026-11-28-submission/pan-gfxinfo.txt).
+
+Mẫu emulator này có độ trễ cao. Việc tái sử dụng tài nguyên và chỉ vẽ khi cần đã có trong mã, nhưng chưa đủ để kết luận đạt yêu cầu phản hồi mượt của mục 3.4 trong môi trường đo. Không suy ra số đo trên điện thoại thật hoặc hiệu năng 3D từ mẫu này. Video thao tác không thay thế phép đo frame-time của ứng dụng; FPS của file video cũng không phải FPS của app.
+
+## Lệnh tái hiện
 
 ```sh
 ./gradlew --offline :app:assembleDebug :app:testDebugUnitTest :app:assembleDebugAndroidTest :app:lintDebug
+./gradlew --offline :app:testDebugUnitTest :app:lintDebug --rerun-tasks
 adb -s emulator-5554 install -r app/build/outputs/apk/debug/app-debug.apk
 adb -s emulator-5554 install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
 adb -s emulator-5554 shell am instrument -w vn.edu.midterm.cinemamap.test/androidx.test.runner.AndroidJUnitRunner
+python3 tools/profile_map.py --serial emulator-5554
 ```
 
-`--offline` chỉ dùng vì môi trường này có cache. Báo cáo Gradle mặc định ở `app/build/reports/`, không đưa thư mục build lên Git. Các log rút gọn và ảnh cần thiết được lưu trong `docs/evidence/2026-11-27-final/` sau khi chạy xong. Test runner ADB phải ghi `OK`, không lấy riêng exit code ADB để kết luận.
+Lệnh đo chạy riêng với kiểm thử thiết bị. Kết luận instrumentation dựa trên nội dung `OK` hoặc `FAILURES` của runner, không chỉ exit code ADB.
 
-## Phạm vi kiểm thử tự động
+## Hồ sơ và giới hạn kết luận
 
-| Nhóm | Ca và phạm vi |
-| --- | --- |
-| Fixture/hit-test | `MapGeometryTest`: đủ 196 ID duy nhất/212 chỗ, số ghế theo loại; cạnh trái/trên nhận, phải/dưới loại; tâm và sát trong/ngoài bốn cạnh của mọi ghế qua 3 camera có scale/offset khác nhau; khe/lối giữa/màn chiếu không trúng |
-| Chọn/lọc/tổng | `BookingViewModelTest`, `SeatFilterTest`: chọn/bỏ, giá cặp, chặn Đã đặt, lọc AND/rỗng, lựa chọn ngoài lọc, inspect độc lập, phục hồi handle mới, loại ID lạ/trùng/Đã đặt/Không khả dụng và enum lạ |
-| 2D tích hợp | `BookingSheetTest` 4 ca + `MapNavigationTest` 2 ca: Sheet/danh sách cuộn, định vị/xóa/tổng, bộ lọc/reset/recreate, Legend và bố cục ngang, pan/minimap |
-| Gesture/xoay | `MapInteractionTest` 3 ca: kiểm tra pixel thật sau chọn/xóa/lọc/zoom để phát hiện cache cũ; MotionEvent hai ngón thật qua detector, neo lệch tâm, min/max, không phát tap; pan tới bốn góc vẫn còn sơ đồ. Dọc → ngang → dọc giữ zoomRatio 2,5, lựa chọn/lọc/tiền/Sheet và nhãn Thu gọn |
-| 3D | `CinemaSceneGeometryTest` 9 unit: ánh xạ ID, camera/hướng nhìn, ghế đôi, cấu hình và A/B. `CinemaPreviewTest` 5 ca + `CinemaPreviewUpgradeTest` 4 ca: cảnh thật/điểm ảnh, đổi ghế, quay về, xoay, minimap/picker, A/B, side, fullscreen và cấu hình |
-| Video | `CinemaTrailerTest` 2 ca: metadata 5 giây/không âm thanh, điểm ảnh chuyển động/pause, recreate, loop, timestamp sau resume và thêm chu kỳ ra nền thứ hai |
-| Template | 1 unit test và 1 instrumentation test mẫu còn trong template; không dùng chúng thay cho ca chức năng |
+README đã có mô tả đề tài, hướng dẫn chạy, kiến trúc, dữ liệu, tọa độ, hit-testing, trạng thái, tối ưu, video, hình ảnh và nhật ký AI. Lịch sử trước đợt cập nhật này có 12 commit, phân bố ngày 23, 24, 27 và 28/11/2026. Video dài 4 phút 49 giây; metadata Drive cho thấy file được chia sẻ cho người có liên kết ở quyền commenter, bao gồm khả năng xem.
 
-Unit test hình học dùng tọa độ và bộ tính thật, không so ảnh đoán ID. Ca UI pan biên gọi hàm pan của View để kiểm tra mọi góc cực trị; ca kéo một ngón qua MotionEvent nằm ở MapNavigationTest. Kết quả không có nghĩa đã thử mọi chuỗi ba ngón, mọi thiết bị hoặc mọi font scale.
-
-## Các lỗi đã phát hiện và xử lý
-
-1. **Nhãn Sheet sai sau xoay/recreate:** Behavior đã mở nhưng nút còn Xem ghế. Activity đồng bộ nhãn sau layout và khi Behavior đổi nấc. Ca hồi quy kiểm tra cả nấc thực và nhãn.
-2. **Camera 2D về fit khi tạo lại View:** SavedState của View lưu zoomRatio/tâm world/cờ fit, áp sau khi viewport hợp lệ và clamp. Ca xoay xác minh tỷ lệ không bị reset.
-3. **Chưa có saved state cho phiên đặt ghế:** SavedStateHandle lưu primitive/ID, phục hồi theo fixture và tính lại tổng. Unit test dựng handle mới từ snapshot. Đây không phải cơ sở dữ liệu lâu dài và chưa được gọi là một ca OS kill thực tế.
-4. **Video có lần đứng sau vòng đời:** audit trước sửa đạt 16/17; chạy riêng lại đạt nên không tự coi ổn định. Player nay release decoder khi ra nền, tạo lại theo Surface hợp lệ và seek; bỏ callback decoder đã thay. Ca hồi quy kiểm tra timestamp lẫn ảnh thật sau loop và hai lần resume, không hạ ngưỡng chuyển động.
-5. **Kiểm thử Sheet đọc khi animation còn SETTLING:** lượt đầu sau sửa có 18/19 ca đạt, lỗi mong EXPANDED nhưng đang SETTLING. Thay sleep cố định bằng chờ Behavior thực sự EXPANDED với timeout; không bỏ assertion hay cưỡng ép trạng thái app.
-
-6. **Tối ưu đường vẽ:** thử cache Picture/RenderNode nhưng không có bằng chứng cải thiện frame time trong emulator, nên không giữ trong bản chốt. Ảnh QA từng phát hiện bounds 0 của bản thử; bản thử không được commit và số đo ảnh trống không được dùng. Bản chốt chỉ cache thông số chữ và cull ghế ngoài viewport, dùng Canvas trực tiếp. Ca pixel màn hình thật xác minh chọn/xóa/lọc vẫn cập nhật đúng màu.
-
-## Phạm vi đo hiệu năng
-
-`tools/profile_map.py --serial emulator-5554` khởi động lại task ở hướng dọc, reset gfxinfo và gửi 16 swipe một ngón (4 hướng, 240 ms/lượt) ở mức fit với 196 ghế. Script in thông tin thiết bị, số frame và thống kê `dumpsys gfxinfo ... framestats`; báo lỗi nếu không có frame. Không chạy cùng instrumentation. Nếu ADB không ở PATH, truyền `--adb /đường/dẫn/adb`.
-
-Đây là mẫu render của **Debug trên emulator (SkiaGL, GPU mode auto)**, gồm chi phí Android/UI và lệnh input; không phải benchmark GPU cô lập, không chứng minh pinch/3D đạt cùng frame time hoặc 60 FPS trên Samsung. Yêu cầu đề là tránh giật rõ, không đưa ngưỡng FPS cụ thể. Xem kết quả thực ở phần đầu, ghi giới hạn thay vì tự công nhận mọi thiết bị đạt.
-
-## Đối chiếu T01–T16 và phần còn lại
-
-- T01–T02: fixture/hình học, logic chọn và ca UI Sheet đã kiểm tra; hình thức bố cục xem ảnh trong minh chứng.
-- T03–T05: kiểm tra tự động pan/minimap, min/max/neo pinch và mép 196 ghế sau transform. Sự kiện pinch không tạo tap. Tổ hợp thao tác bằng tay trên Samsung vẫn do sinh viên dùng thử.
-- T06–T10: reset/giữ lọc-lựa chọn, Legend, rỗng/xóa lọc, Sheet cuộn/xóa/định vị có ca tự động. Tương tác kéo Sheet bằng tay, font lớn và trình đọc màn hình chưa có chứng nhận đầy đủ.
-- T11: xoay dọc/ngang/dọc và recreate giữ state/camera/Sheet/nhãn có ca hồi quy.
-- T12: Home/resume 3D và handle mới đã kiểm tra; không đánh đồng recreate với hủy tiến trình Android thật. Chưa cam kết giữ phiên sau force-stop/xóa app.
-- T13–T14: soát cache đồ họa, đo mẫu pan và build nguồn sạch theo kết quả liên kết.
-- T15: README/nhật ký AI đã cập nhật; sinh viên cần tự kiểm tra và giải thích code, Agent không xác nhận thay.
-- T16: **chưa thực hiện, sinh viên quay video 1–5 phút và thêm URL sau**; kiểm tra quyền truy cập repo/video trước nộp.
-
-## Giới hạn không được ghi thành chức năng hoàn tất
-
-Chưa có backend/thanh toán, iOS, phục hồi đặt vé lâu dài, vị trí 3D hiệu chuẩn rạp thật, ánh sáng vật lý hay accessibility node riêng từng ghế. Đây không phải các yêu cầu chức năng bắt buộc của đề hiện tại. Video demo và trách nhiệm kiểm tra/hiểu mã của sinh viên vẫn là yêu cầu phải hoàn thiện trước nộp.
-
-### Diễn giải số đo
-
-Không dùng các lần thử Picture/RenderNode để công bố phần trăm tăng tốc: môi trường có tải thay đổi và một bản thử có ảnh trống. Bản chốt loại bỏ các cache đó, chỉ giữ cache metrics chữ và culling ô ngoài viewport. Gfxinfo cho thấy frame end-to-end còn trễ, dù giai đoạn ghi draw trên UI ngắn hơn nhiều so với toàn frame; cần trace sâu hơn trên máy thật để kết luận nguyên nhân CPU/GPU/driver. Kiểm thử chức năng đạt không đồng nghĩa hiệu năng đã đạt trên mọi máy.
+Các chức năng bắt buộc đã có hiện thực và bằng chứng kiểm thử tương ứng. Tuy nhiên, tiêu chí độ mượt còn hạn chế theo mẫu đo, và phần mở rộng A/B còn một ca lỗi tái hiện. Vì vậy, hồ sơ không đưa ra cam kết đáp ứng tuyệt đối mọi tiêu chí hoặc điểm số. Những giới hạn này được công bố cùng kết quả đã đạt.

@@ -1,51 +1,37 @@
-# Quy chuẩn dự án, môn học và sử dụng AI
+# Nguyên tắc thiết kế và phương pháp thực hiện
 
-## Thiết kế và mã nguồn
+## Phạm vi học phần
 
-- Dùng một Custom View cho sơ đồ. Mọi hình ghế, màn chiếu, lối đi, nhãn khu/hàng được vẽ trong cùng Canvas. RecyclerView phục vụ danh sách Bottom Sheet.
-- Giữ quan hệ dữ liệu → trạng thái → UI. Một phép biến đổi camera cho vẽ và hit-testing. UI gửi ý định theo ID, ViewModel thực thi quy tắc chọn/lọc. Thông tin hiển thị dẫn xuất từ state hiện tại.
-- Tên lớp, hàm và test bằng tiếng Anh, mô tả ý nghĩa nghiệp vụ. Nội dung hiển thị bằng tiếng Việt, đặt trong tài nguyên chuỗi. Dùng dp/sp cho UI, pixel cục bộ cho sự kiện và world cho hình học. Ghi chú ngắn ở phép toán hoặc đoạn có điều kiện biên.
-- Giữ nguyên một tập token màu, chữ, khoảng cách và dấu hiệu trạng thái cho hai hướng. Thêm trạng thái rỗng, phản hồi thao tác và nhãn hỗ trợ đọc màn hình cho các điều khiển. Theo [quy chuẩn UI/UX](03-ui-ux.md) khi duyệt layout.
-- Trước mỗi mốc, chạy kiểm tra phù hợp với phần thay đổi và ghi môi trường, lệnh, kết quả thật. Giữ test xác định được kết quả và fixture cố định.
+Dự án thực hiện đề tài sơ đồ phòng chiếu rạp phim trong đề giữa kỳ cá nhân của học phần Phát triển phần mềm cho thiết bị di động. Dữ liệu giả lập được sử dụng theo phạm vi cho phép của đề. Các yêu cầu bắt buộc được truy vết trong [đặc tả](01-yeu-cau.md); phần 3D là chức năng mở rộng.
 
-## Quy trình phối hợp với Agent
+## Phân tách trách nhiệm
 
-1. **Hiểu đề và khái niệm.** Chọn một phần nhỏ, đối chiếu mã R và tiêu chí chấm, giải thích khái niệm cùng ví dụ. Chẳng hạn, trước khi viết hit-testing, sinh viên tự đổi một điểm chạm từ pixel về world.
-2. **Xác định việc cần làm và setup.** Tách phần đang học thành các bước, nêu đầu vào, tệp liên quan và kết quả có thể kiểm tra. Agent hướng dẫn hoặc trực tiếp setup theo đúng nội dung sinh viên yêu cầu.
-3. **Hướng dẫn để sinh viên tự làm.** Đưa một bài thực hành vừa sức, gợi ý hoặc ví dụ nhỏ theo mức sinh viên cần. Sinh viên tự cài đặt, chạy thử và có thể yêu cầu đọc diff, giải thích lỗi hoặc gợi ý bước debug.
-4. **Hoàn thiện phần được giao.** Khi sinh viên đã luyện một mẫu và chủ động yêu cầu Agent làm tiếp phần lặp lại, giới hạn sửa đổi vào phần đó. Báo thay đổi, kiểm tra đã chạy và điểm sinh viên cần tự xác minh.
-5. **Chốt phần hiện tại.** Đối chiếu ca nghiệm thu, cập nhật nhật ký và chọn thời điểm commit theo thay đổi thực tế. Sinh viên chủ động chọn công việc kế tiếp.
+Dữ liệu ghế được quản lý độc lập với lớp vẽ. ViewModel xử lý lựa chọn, điều kiện lọc và các tổng dẫn xuất. Canvas và Bottom Sheet cùng nhận trạng thái từ ViewModel; các thao tác giao diện gửi sự kiện theo ID ghế. Cách tổ chức này tránh việc mỗi thành phần duy trì một danh sách lựa chọn riêng.
 
-Duyệt kế hoạch xác nhận hướng làm chung. Mỗi lượt hỗ trợ dựa trên phần việc và hành động sinh viên yêu cầu, như giải thích, lập danh sách việc, setup, hướng dẫn, review hoặc sửa trực tiếp. Hướng dẫn và review mặc định thực hiện ở chế độ đọc. Agent chỉ sửa mã, tạo dự án, commit hoặc chuyển sang phần kế khi sinh viên yêu cầu hành động tương ứng. Ghi đóng góp của Agent và phần sinh viên tự làm theo thực tế.
+Hình học dùng tọa độ world cố định. Sự kiện chạm dùng pixel cục bộ của View và được chuyển ngược qua camera trước hit-testing. Cùng một phép biến đổi được sử dụng cho vẽ và kiểm tra vùng chạm. Dọc và ngang sử dụng chung dữ liệu, quy tắc trạng thái và hệ màu.
 
-## Tài liệu và quy trình cá nhân
+## Quy ước mã nguồn
 
-- README sau triển khai có mô tả đề tài, cách tải và chạy, SDK/JDK/Gradle đã kiểm chứng, kiến trúc và dữ liệu, công thức tọa độ, hit-testing, quản lý trạng thái khi xoay, hiệu năng, video và nhật ký AI. Dẫn ra tài liệu chi tiết khi cần. Dùng đường dẫn tương đối trong repo.
-- Dùng mã R cho yêu cầu và mã T cho ca kiểm thử. Với mỗi ca, ghi build/commit, thiết bị và hướng, dữ liệu đầu vào, điều mong đợi, kết quả, và đường dẫn minh chứng nếu có. Trạng thái ghi `Chờ triển khai`, `Chưa chạy`, `Đạt` hoặc `Không đạt`.
-- Sinh viên duyệt thay đổi, chịu trách nhiệm về toàn bộ mã, chạy demo và giải thích luồng gesture, phép đổi tọa độ và state. Các yêu cầu học thuật của học phần và nhà trường tiếp tục áp dụng. Đề cho phép AI hỗ trợ phân tích, kiến trúc, viết/chỉnh mã, debug, kiểm thử và giải thích lỗi.
-- Theo mốc “05–07” của đề, chọn các commit có ý nghĩa và phân bố trong thời gian triển khai thật. [Lộ trình](05-nghiem-thu.md) là các nhóm công việc để chọn theo tiến độ. Mỗi commit mô tả ý nghĩa thay đổi, kiểm tra diff và các tệp được theo dõi. Nộp liên kết repo GitHub và video truy cập được với quyền của người chấm.
-- Dùng tên rạp/phim, giá và dữ liệu tự tạo. Tài nguyên bên thứ ba, nếu sử dụng, ghi nguồn và quyền sử dụng rõ. Dữ liệu nhận dạng, tài khoản, khóa, file ký và thông tin SDK theo máy nằm ngoài repo.
+- Tên lớp, hàm và biến thể hiện trách nhiệm bằng tiếng Anh; chuỗi giao diện tiếng Việt đặt trong tài nguyên Android.
+- Kích thước giao diện dùng dp/sp; hình học sơ đồ dùng đơn vị world; sự kiện chạm và viewport dùng pixel.
+- Paint, Path, RectF và hình học được tái sử dụng. Thông số nhãn ghế được tính trước khi vẽ.
+- Ghi chú mã tập trung vào phép toán, vòng đời và trường hợp biên cần giải thích.
+- Dữ liệu giả lập cố định phục vụ tái hiện các ca chọn, lọc và tính tiền.
 
-## Nhật ký sử dụng AI Agent
+## Phương pháp thực hiện và học tập
 
-Ghi **trong README.md**, sau mỗi đợt có đóng góp đáng kể. Mỗi mục ghi đầy đủ:
+Quá trình thực hiện gồm phân tích đề, tìm hiểu khái niệm, cài đặt từng nhóm chức năng, chạy thử và điều chỉnh. Sinh viên sử dụng giải thích của AI để đọc luồng giữa các lớp và tự viết lại một số đoạn cơ bản. Những phần tiếp theo được hoàn thiện theo từng chức năng, thay vì coi bản kế hoạch ban đầu là sản phẩm hoàn chỉnh.
 
-| Trường | Nội dung cần lưu |
-| --- | --- |
-| Ngày và công cụ | Ngày thực tế, tên AI Agent, model nếu biết |
-| Nhiệm vụ giao | Mục tiêu, phần yêu cầu, prompt tóm tắt hoặc đường dẫn prompt nội bộ |
-| Đóng góp | Tệp/lớp/thuật toán được tạo, sửa hoặc đề xuất và tình trạng tiếp nhận |
-| Lỗi hay hạn chế | Lỗi quan sát được và điểm cần xác minh. Nếu đã kiểm tra mà chưa thấy lỗi, ghi phạm vi kiểm tra |
-| Kiểm tra của sinh viên | Cách đọc diff, chạy test/đo/dùng thử, kết quả thật và cách sinh viên sửa hoặc quyết định loại bỏ |
+Các phản hồi giao diện tập trung vào khả năng quan sát sơ đồ, phân biệt trạng thái, bố cục ngang và thao tác bằng một hoặc hai ngón. UI/UX của MoMo và CGV được sinh viên tìm hiểu để tham khảo; giao diện, dữ liệu và tài nguyên trong dự án được triển khai riêng.
 
-Mẫu khi cập nhật hàng nhật ký:
+## Tài liệu và kiểm chứng
 
-```text
-Ngày / AI Agent:
-Nhiệm vụ và mã yêu cầu:
-Phần đầu ra sử dụng, tệp hoặc commit:
-Lỗi, hạn chế, phần còn chờ kiểm tra:
-Cách sinh viên thực sự kiểm tra và điều chỉnh:
-```
+README trình bày các nội dung theo mục 5.4 của đề và có nhật ký AI theo mục 5.5. Mỗi phát biểu về chức năng gắn với mã nguồn, ca kiểm thử hoặc hình ảnh/video. Kết quả kỳ vọng, kết quả đã chạy và hạn chế được phân biệt trong [báo cáo kiểm chứng](09-kiem-chung.md). Tài liệu không sử dụng điểm tự chấm để thay kết luận của giảng viên.
 
-Mục lập kế hoạch bằng Codex đã được ghi trong [README](../README.md). Các mục sau ghi khi có công việc và kiểm tra thực tế.
+Lịch sử Git được giữ theo các mốc phát triển thực tế. Đề yêu cầu tối thiểu 05–07 commit có ý nghĩa; không yêu cầu chia đều commit theo từng ngày. Tệp build, SDK theo máy và bản quay/video hậu kỳ không thuộc mã nguồn được theo dõi. Video minh họa được chia sẻ bằng liên kết riêng.
+
+## Sử dụng AI và nguồn tài nguyên
+
+Codex hỗ trợ định hướng, giải thích, sinh/chỉnh mã, kiểm thử và biên tập. Phạm vi đóng góp và cách kiểm tra được ghi trong [nhật ký AI tại README](../README.md#nhật-ký-sử-dụng-ai-agent) và [tài liệu sử dụng AI](06-su-dung-ai.md). Sinh viên chịu trách nhiệm về nội dung nộp theo quy định của đề.
+
+Clip lửa trại được tạo bằng mã; ảnh tham khảo không được đóng gói trong APK. Video demo được ghi từ ứng dụng, sau đó bổ sung chú thích, con trỏ và giọng đọc tổng hợp tiếng Việt. Hai loại video có mục đích riêng: tài nguyên trình chiếu trong app và minh họa chức năng của bài làm.

@@ -1,50 +1,49 @@
-# Đối chiếu đề thi và phương án rạp phim
+# Đặc tả và đối chiếu yêu cầu
 
-Nguồn là đề thi PDF 5 trang. Các số mục bên dưới trỏ tới đề gốc. Mã R dùng để liên kết đặc tả, kiểm thử và minh chứng. Tiến độ kiểm chứng được ghi trong tài liệu nghiệm thu.
+## Cơ sở và phạm vi
 
-## Phạm vi và cách hiểu các ngưỡng
+Tài liệu đối chiếu đề `De_thi_giua_ky_CNTN2024.pdf`, gồm 5 trang. Dự án chọn đề tài 2: sơ đồ phòng chiếu rạp phim. Các mã R01–R18 dùng để truy vết yêu cầu với phần hiện thực và kiểm chứng.
 
-- Mục 1 yêu cầu ứng dụng di động có màn hình chính là sơ đồ tự vẽ trên Canvas. Sinh viên làm cá nhân trong một tuần, chọn một trong năm chủ đề. Chủ đề số 2 có màn chiếu, lối đi, ghế thường, VIP, ghế đôi và trạng thái đặt vé.
-- Mục 2.1 và checklist mục 8 ghi **50–250 đối tượng**. Rubric mục 6 dùng **150–250** cho hạng mục Canvas. Ứng dụng dùng **196 đối tượng ghế nhìn thấy ở góc mặc định**, trong đó có 16 ghế đôi. Màn chiếu, lối đi và nhãn khu vực là hình vẽ định hướng, nằm ngoài số đếm ghế.
-- Đề dùng dữ liệu giả lập và cho phép thực hiện bằng Android Custom View/Canvas hoặc Flutter CustomPainter. Thiết kế đề xuất một suất chiếu offline, trạng thái đặt sẵn trong fixture và nhật ký kiểm tra trong README.
-- Mục 5.2 và mục 8 diễn đạt số commit là “05–07”. Lịch sử có các commit có ý nghĩa, phân bố trong thời gian thực hiện. Kiểm tra mốc **05–07** theo đề khi chuẩn bị nộp. Chọn thời điểm commit và cách chia thay đổi theo tiến độ thật.
+Mục 2.1 và danh mục kiểm tra của đề quy định 50–250 đối tượng; bảng tiêu chí chấm mục 6 quy định 150–250. Dữ liệu CinemaMap gồm **196 đối tượng ghế**, đáp ứng cả hai khoảng. Ghế đôi là một đối tượng có hai chỗ, nên tổng sức chứa là 212 chỗ. Màn chiếu, lối đi và nhãn là thành phần định hướng, không được cộng vào số ghế.
 
-## Ma trận truy vết
+## Ma trận yêu cầu
 
-| Mã | Đề | Yêu cầu | Phương án và điều kiện nghiệm thu |
+| Mã | Nguồn trong đề | Yêu cầu | Hiện thực và minh chứng |
 | --- | --- | --- | --- |
-| R01 | 1, 2.1, 6, 8 · tr. 1, 4–5 | Phòng chiếu có hình học rõ, đối tượng theo khu, có nhãn, đọc tổng thể ở zoom mặc định | A–L chia Thường/VIP/Đôi, màn chiếu ở đầu phòng, hai khối trái/phải, lối đi giữa và khoảng cách giữa các khu. Mở app thấy toàn phòng và đủ 196 ghế ở cả hai hướng. |
-| R02 | 2.1 · tr. 1–2 | Ít nhất ba trạng thái trực quan, phản hồi rõ khi chọn, bỏ chọn trả đúng trạng thái trước | Bốn trạng thái Trống, Đang chọn, Đã đặt, Không khả dụng. Chọn ghế trống đổi nền cobalt và chữ trắng; ô bo góc không viền, không dùng ký hiệu. Bỏ chọn trả về Trống, các ghế khác giữ nguyên. Loại ghế và trạng thái có mã hóa riêng. |
-| R03 | 2.1 · tr. 1 | Pan một ngón theo các hướng và giới hạn phạm vi | Kéo theo hai trục, chặn ở biên, không đẩy toàn bộ bản đồ ra khỏi viewport. Giới hạn pan có đệm 15% viewport để kéo linh hoạt, Reset View căn giữa. |
-| R04 | 2.1 · tr. 1 | Pinch liên tục quanh tâm hai ngón, giới hạn min/max | Dùng focus hai ngón và phép đổi tọa độ, tỷ lệ tương đối từ 0,8× đến 5× mức vừa phòng, mặc định 1×. Giữ điểm neo khi biên cho phép. |
-| R05 | 2.1, 3.2, 7 · tr. 1–2, 4 | Tap chính xác để chọn/bỏ chọn/xem thông tin, kể cả sát biên sau pan/zoom | Đảo phép biến đổi dùng khi vẽ, hit vùng ghế tại tọa độ world. Chạm mép trong chọn đúng ghế, mép ngoài và lối đi bỏ qua. Ghế đã đặt/không khả dụng cho xem chi tiết, không thêm vào danh sách. |
-| R06 | 2.2 · tr. 2 | Legend đầy đủ, dễ mở, ít che sơ đồ | Dải gọn ngay cạnh toolbar/sơ đồ và mục Chú thích xem đủ loại, trạng thái, nhãn khu và ý nghĩa lối đi, ghế đôi, lọc mờ. |
-| R07 | 2.2 · tr. 2 | Lọc hoặc tìm kiếm, có điều kiện đang dùng, xóa được, có trạng thái rỗng, lựa chọn nhất quán | Lọc theo loại và trạng thái với nhãn đang áp dụng. Ghế lệch điều kiện làm mờ, có thông báo khi 0 kết quả và thao tác xóa lọc. Lựa chọn đang có giữ trong sheet và ghi rõ khi nằm ngoài lọc. |
-| R08 | 2.2 · tr. 2 | Reset View mượt về vị trí và tỷ lệ mặc định, giữ bộ lọc/lựa chọn theo quy tắc | Nút Toàn phòng làm hoạt ảnh về camera fit. Bộ lọc, ghế đã chọn và trạng thái sheet được giữ. |
-| R09 | 2.3 · tr. 2 | Bottom Sheet thu gọn hiển thị tóm tắt | Hiện thông tin suất chiếu, mã hoặc số ghế đối tượng, số chỗ và tạm tính, kèm thông tin ghế vừa chạm khi cần. |
-| R10 | 2.3 · tr. 2 | Bottom Sheet mở rộng hiển thị chi tiết/danh sách, cuộn được, còn vùng tương tác trên sơ đồ | Sheet hai nấc dạng thường trực, có danh sách cuộn và khu vực Canvas tương tác được ở cả dọc/ngang. |
-| R11 | 2.3 · tr. 2 | Định vị hoặc làm nổi đối tượng tương ứng, xóa mục khi phù hợp | Chạm dòng ghế để định vị và đánh dấu; nút Xóa của từng dòng cập nhật ghế, số chỗ và giá. Ca đang lọc vẫn định vị được. |
-| R12 | 2.3, 3.3 · tr. 2–3 | Đồng bộ hai chiều, đúng sau lọc/reset/xoay, không trùng và không còn dữ liệu lỗi thời | Canvas, bộ lọc và Sheet cùng đọc trạng thái và gửi sự kiện qua ViewModel. Danh sách dựa trên ID duy nhất, chi tiết được dẫn xuất từ trạng thái hiện tại. |
-| R13 | 3.1–3.2 · tr. 2 | Canvas duy nhất tự vẽ toàn sơ đồ, không tạo từng View/Widget thay ghế, dữ liệu độc lập lớp vẽ | Một `CinemaMapView`, dữ liệu fixture và hình học tách khỏi renderer. Kiểm tra cây View và đối chiếu transform thuận/nghịch trong mã. |
-| R14 | 3.3, 8 · tr. 3–5 | Phân tầng, giữ lựa chọn khi xoay, giao diện ổn định hai hướng | ViewModel giữ trạng thái logic, camera lưu dạng chuẩn hóa để tính lại khi đổi kích thước. Kiểm tra lần lượt dọc → ngang → dọc với filter, sheet và selection đã có. |
-| R15 | 3.4, 6 · tr. 3–4 | Tái sử dụng tài nguyên, vẽ khi cần, thao tác mượt | Cache Paint/Path/hình học/nhãn; invalidate theo thay đổi, kiểm tra trace và thao tác ở 196 ghế. 196 là quy mô nộp bài; thử 250 là mở rộng kiểm thử, không phải một chức năng riêng bắt buộc. |
-| R16 | 4, 5.4–5.5 · tr. 3–4 | Trách nhiệm cá nhân, kiểm tra đầu ra AI và ghi nhật ký trong README | Ghi agent, việc giao, phần mã, hạn chế và cách sinh viên kiểm tra/sửa. Sinh viên có thể giải thích thuật toán và quyết định triển khai. |
-| R17 | 5.1–5.2, 6–8 · tr. 3–5 | GitHub repo truy cập được, mã build/run, cấu trúc rõ, lịch sử Git thực | Kiểm tra từ bản clone sạch. Đối chiếu số lượng theo mục 5.2, kiểm tra commit phân bố theo tiến độ thật, thông điệp rõ và tệp theo dõi cần thiết. |
-| R18 | 5.3–5.4, 8 · tr. 3–5 | Video 1–5 phút, README đầy đủ, link repo và video truy cập được | Quay đủ thao tác theo kịch bản, README có đủ mục đề yêu cầu, thử quyền truy cập bằng phiên độc lập với tài khoản chủ sở hữu. |
+| R01 | 1, 2.1; trang 1 | Sơ đồ có phân khu, lối đi, nhãn và nhận biết tổng thể ở mức mặc định | Một CinemaMapView vẽ khu Thường/VIP/Đôi, hàng A–L, màn chiếu và hai khối ghế. MockCinemaData, MapGeometryTest, ảnh màn hình chính |
+| R02 | 2.1; trang 1–2 | Ít nhất ba trạng thái; phản hồi chọn và bỏ chọn chính xác | Bốn trạng thái Trống/Đang chọn/Đã đặt/Không khả dụng; BookingViewModelTest và kiểm tra điểm ảnh trong MapInteractionTest |
+| R03 | 2.1; trang 1 | Pan một ngón theo các hướng, có giới hạn | Camera giới hạn theo viewport với đệm 15%; MapNavigationTest và MapInteractionTest |
+| R04 | 2.1; trang 1 | Pinch liên tục quanh tâm hai ngón, có min/max | ScaleGestureDetector, điểm neo world, tỷ lệ 0,8–5 lần fit; MapInteractionTest |
+| R05 | 2.1, 3.2; trang 1–2 | Hit-testing đúng sau pan/zoom và sát biên | viewToWorld và kiểm tra hình chữ nhật nửa mở; MapGeometryTest kiểm tra bốn cạnh qua nhiều camera |
+| R06 | 2.2; trang 2 | Chú thích đầy đủ, dễ truy cập, ít che sơ đồ | Dải chú thích cuộn ngang và dialog Chi tiết; BookingSheetTest |
+| R07 | 2.2; trang 2 | Lọc hoặc tìm kiếm, thể hiện điều kiện, xóa lọc và thông báo rỗng | Lọc AND theo loại/trạng thái, ghế lệch điều kiện làm mờ, giữ lựa chọn trong Sheet; SeatFilterTest, BookingSheetTest và video |
+| R08 | 2.2; trang 2 | Reset View mượt về mặc định, giữ lựa chọn và lọc | ValueAnimator 220 ms, chỉ thay camera; BookingSheetTest và video |
+| R09 | 2.3; trang 2 | Bottom Sheet thu gọn có thông tin tóm tắt | Số ghế, số chỗ, tạm tính và ghế đang xem; BookingSheetTest |
+| R10 | 2.3; trang 2 | Bottom Sheet mở rộng có nội dung cuộn và còn vùng tương tác | RecyclerView và bố cục dọc/ngang riêng; BookingSheetTest |
+| R11 | 2.3; trang 2 | Chọn mục để định vị/làm nổi và xóa từng mục | inspectSeat, locateSeat, removeSeat; BookingSheetTest và video |
+| R12 | 2.3, 3.3; trang 2–3 | Canvas–lọc–Sheet đồng bộ; không trùng hoặc sai thông tin sau lọc/reset/xoay | BookingUiState/StateFlow; BookingViewModelTest, BookingSheetTest, MapInteractionTest |
+| R13 | 3.1–3.2; trang 2 | Một Canvas cho sơ đồ; không dùng từng View thay ghế; dữ liệu độc lập | MockCinemaData → MapGeometry → CinemaMapView; đọc mã nguồn và kiểm thử tọa độ |
+| R14 | 3.3; trang 3 | Phân tách trách nhiệm, giữ lựa chọn và hoạt động ở hai hướng | ViewModel, SavedStateHandle, SavedState của View, layout-land; ca xoay trong MapInteractionTest |
+| R15 | 3.4; trang 3 | Tái sử dụng tài nguyên, vẽ khi cần và thao tác mượt | Paint/Path/hình học/thông số chữ được tái sử dụng; có culling. Số đo và giới hạn độ mượt tại báo cáo 09 |
+| R16 | 4, 5.5; trang 3–4 | Ghi công cụ AI, đóng góp, hạn chế và cách kiểm tra/điều chỉnh | Nhật ký trong README; tài liệu 06 mô tả phạm vi hỗ trợ và hoạt động tự thực hành |
+| R17 | 5.1–5.2; trang 3 | Dự án build/chạy được; lịch sử tối thiểu 05–07 commit có ý nghĩa | Log build, kiểm thử thiết bị, build nguồn sạch và lịch sử Git phân bố 23–28/11/2026 |
+| R18 | 5.3–5.4, 8; trang 3–5 | Video 1–5 phút, README đầy đủ và liên kết truy cập được | Video 4:49; README có liên kết trực tiếp và thư mục Drive; metadata/quyền truy cập được kiểm tra |
 
-## Rubric và điều kiện giới hạn điểm
+Phạm vi và kết quả cụ thể của từng minh chứng được ghi trong [báo cáo kiểm chứng](09-kiem-chung.md). Ma trận mô tả quan hệ yêu cầu–hiện thực, không gán điểm số cho sản phẩm.
 
-| Hạng mục | Trọng số | Bằng chứng |
-| --- | ---: | --- |
-| Canvas, bố cục và hiệu năng | 25% | R01, R02, R13, R15. Góc nhìn toàn phòng, phép đếm fixture, cây View và trace thao tác |
-| Tương tác và xử lý tọa độ | 25% | R03–R05, R13. Demo pinch theo tâm, pan tới biên và test chạm ghế sát mép sau transform |
-| Chức năng và UX | 20% | R06–R12. Demo từ bộ lọc và Canvas đến Bottom Sheet rồi thao tác ngược lại |
-| Kiến trúc và quản lý trạng thái | 15% | R12–R14. Mã nguồn, sơ đồ phân tầng và xoay thực tế |
-| Chất lượng mã và độ ổn định | 10% | R02–R05, R07–R15, R17. Test biên, vòng đời và build từ clone sạch |
-| Hồ sơ và quy trình nộp | 5% | R16–R18. Git, README, nhật ký và video truy cập được |
+## Tiêu chí chấm
 
-Theo mục 7, tính năng cần chạy và kiểm chứng được để tính điểm. Dùng Canvas sai yêu cầu giới hạn hạng mục tương ứng ở 5/25 điểm theo cách ghi của đề. Hit-testing sai sau pan hoặc zoom sẽ mất điểm phần hit-testing. Ứng dụng không build hoặc khởi chạy được có tổng điểm tối đa 5,0/10,0 và giảng viên chỉ chấm phần xác minh được. Tính năng bổ sung không thay thế yêu cầu bắt buộc. Vi phạm học thuật xử lý theo quy định của học phần và nhà trường.
+| Hạng mục | Tỷ trọng |
+| --- | ---: |
+| Canvas, bố cục và hiệu năng | 25% |
+| Tương tác và xử lý tọa độ | 25% |
+| Chức năng và trải nghiệm người dùng | 20% |
+| Kiến trúc và quản lý trạng thái | 15% |
+| Chất lượng mã nguồn và độ ổn định | 10% |
+| Hồ sơ và quy trình nộp bài | 5% |
 
-## Bản triển khai và kiểm chứng
+Theo mục 7 của đề, chức năng không chạy hoặc không thể kiểm tra không được tính điểm. Sử dụng Canvas không đúng yêu cầu giới hạn hạng mục tương ứng ở 5/25 điểm; hit-testing sai sau pan/zoom không được tính điểm phần hit-testing. Nếu ứng dụng không biên dịch hoặc khởi chạy được, tổng điểm tối đa là 5,0/10,0. Các phần mở rộng không thay thế yêu cầu bắt buộc.
 
-Các phương án trong ma trận được đối chiếu với mã hiện tại tại [README](../README.md). Kết quả kiểm thử, giới hạn và phần sinh viên thực hiện sau nằm trong [09 — Kiểm chứng](09-kiem-chung.md). R18 còn chờ video demo 1–5 phút và xác minh quyền truy cập. Không đánh dấu hoàn tất hồ sơ chỉ vì đã có clip 5 giây trong 3D.
+## Phạm vi đánh giá
+
+Kiểm thử chức năng, kiểm tra cấu trúc mã và phép đo hiệu năng là các loại bằng chứng riêng. Kết quả kiểm thử không đủ để suy ra độ mượt trên mọi thiết bị. Yêu cầu sinh viên hiểu và chịu trách nhiệm về mã nguồn thuộc quy định sử dụng AI của đề; khả năng giải trình được giảng viên đánh giá trực tiếp.

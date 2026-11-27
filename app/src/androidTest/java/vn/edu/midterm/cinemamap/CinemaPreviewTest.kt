@@ -248,40 +248,43 @@ class CinemaPreviewTest {
 
     private fun assertScenePixels(filename: String): Int {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
-        // Surface readiness precedes the system's rotation transition ending.
+        // A ready Surface does not imply that the video frame is visible yet.
         SystemClock.sleep(1_000)
-        instrumentation.waitForIdleSync()
-        val bounds = android.graphics.Rect()
-        val miniMapBounds = android.graphics.Rect()
-        instrumentation.runOnMainSync {
-            currentPreview().findViewById<android.view.View>(R.id.preview_scene_container)
-                .getGlobalVisibleRect(bounds)
-            currentPreview().findViewById<android.view.View>(R.id.preview_minimap)
-                ?.getGlobalVisibleRect(miniMapBounds)
-        }
-        assertTrue("Scene viewport must have usable space", bounds.width() > 100 && bounds.height() > 100)
-        val bitmap = instrumentation.uiAutomation.takeScreenshot()
+        val deadline = SystemClock.uptimeMillis() + 8_000
         var flame = 0
         var dark = 0
-        for (y in bounds.top until bounds.bottom step 5) {
-            for (x in bounds.left until bounds.right step 5) {
-                if (miniMapBounds.contains(x, y)) continue
-                val pixel = bitmap.getPixel(x, y)
-                // The current film has a dark background; measure its orange flame,
-                // excluding the UI overlay, rather than treating white UI as video.
-                val red = Color.red(pixel)
-                val green = Color.green(pixel)
-                val blue = Color.blue(pixel)
-                if (red > 150 && green > 50 && red > green * 1.15f && green > blue * 1.3f) flame++
-                if (Color.red(pixel) < 120 && Color.green(pixel) < 120 && Color.blue(pixel) < 120) dark++
+        while (SystemClock.uptimeMillis() < deadline) {
+            instrumentation.waitForIdleSync()
+            val bounds = android.graphics.Rect()
+            val miniMapBounds = android.graphics.Rect()
+            instrumentation.runOnMainSync {
+                currentPreview().findViewById<android.view.View>(R.id.preview_scene_container)
+                    .getGlobalVisibleRect(bounds)
+                currentPreview().findViewById<android.view.View>(R.id.preview_minimap)
+                    ?.getGlobalVisibleRect(miniMapBounds)
             }
+            assertTrue("Scene viewport must have usable space", bounds.width() > 100 && bounds.height() > 100)
+            val bitmap = instrumentation.uiAutomation.takeScreenshot()
+            flame = 0
+            dark = 0
+            for (y in bounds.top until bounds.bottom step 5) {
+                for (x in bounds.left until bounds.right step 5) {
+                    if (miniMapBounds.contains(x, y)) continue
+                    val pixel = bitmap.getPixel(x, y)
+                    val red = Color.red(pixel)
+                    val green = Color.green(pixel)
+                    val blue = Color.blue(pixel)
+                    if (red > 150 && green > 50 && red > green * 1.15f && green > blue * 1.3f) flame++
+                    if (red < 120 && green < 120 && blue < 120) dark++
+                }
+            }
+            java.io.File(instrumentation.targetContext.cacheDir, filename).outputStream().use {
+                bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
+            }
+            bitmap.recycle()
+            if (flame > 20 && dark > 100) return flame
+            SystemClock.sleep(100)
         }
-        assertTrue("The actual screen should show the campfire, not an empty or fallback surface", flame > 20)
-        assertTrue("Room should render around the screen", dark > 100)
-        java.io.File(instrumentation.targetContext.cacheDir, filename).outputStream().use {
-            bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
-        }
-        bitmap.recycle()
-        return flame
+        throw AssertionError("Campfire/room not visible within 8 seconds: flame=$flame dark=$dark; image=$filename")
     }
 }

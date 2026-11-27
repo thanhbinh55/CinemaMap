@@ -1,0 +1,30 @@
+{
+  "duration_seconds": 289,
+  "voice": "vi-VN-NamMinhNeural",
+  "speech_units": 66,
+  "loudness_lufs": "-16.03",
+  "video_bitstreams_unchanged": [
+    {
+      "quality": "4K",
+      "video_sha256": "SHA256=aa435361b380ce61a4de200a49722fcf5b82d2e1ff7d2e7bb23fdd28e90fbb2e",
+      "video_bitstream_unchanged": true
+    },
+    {
+      "quality": "1080p",
+      "video_sha256": "SHA256=559ce0c1dd134bb38e27316172034ba95bc76bba269e61ba0831bca4a2484681",
+      "video_bitstream_unchanged": true
+    }
+  ],
+  "drive_video_url": "https://drive.google.com/file/d/1piFknaiIjQugRZJtInKxAXeU10-ymsua/view?usp=drivesdk",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1eWUSIrnI01RcwsKR_1XceOQVAFMKFwfS",
+  "drive_file_name": "CinemaMap-demo-1080p-giong-nam.mp4",
+  "drive_file_size_bytes": 33420512,
+  "drive_access_observed": {
+    "type": "anyone",
+    "role": "commenter"
+  },
+  "linked_video_resolution": [
+    1920,
+    1080
+  ]
+}

@@ -1,0 +1,53 @@
+
+vn.edu.midterm.cinemamap.CinemaPreviewUpgradeTest:
+Error in comparisonAndCoupleSideSurviveRecreationAndCanBeReplaced(vn.edu.midterm.cinemamap.CinemaPreviewUpgradeTest):
+java.lang.AssertionError: expected:<SeatCameraState(seatId=F09, yaw=0.0, pitch=0.0, side=LEFT)> but was:<SeatCameraState(seatId=L04, yaw=0.0, pitch=0.0, side=RIGHT)>
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.failNotEquals(Assert.java:835)
+	at org.junit.Assert.assertEquals(Assert.java:120)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at vn.edu.midterm.cinemamap.CinemaPreviewUpgradeTest.assertCamera$lambda$14(CinemaPreviewUpgradeTest.kt:190)
+	at vn.edu.midterm.cinemamap.CinemaPreviewUpgradeTest$$ExternalSyntheticLambda1.perform(D8$$SyntheticClass:0)
+	at androidx.test.core.app.ActivityScenario.lambda$onActivity$2$androidx-test-core-app-ActivityScenario(ActivityScenario.java:794)
+	at androidx.test.core.app.ActivityScenario$$ExternalSyntheticLambda2.run(D8$$SyntheticClass:0)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:520)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at android.app.Instrumentation$SyncRunnable.run(Instrumentation.java:2657)
+	at android.os.Handler.handleCallback(Handler.java:1095)
+	at android.os.Handler.dispatchMessageImpl(Handler.java:135)
+	at android.os.Handler.dispatchMessage(Handler.java:125)
+	at android.os.Looper.loopOnce(Looper.java:296)
+	at android.os.Looper.loop(Looper.java:397)
+	at android.app.ActivityThread.main(ActivityThread.java:9523)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:575)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:939)
+
+
+Time: 33.267
+There was 1 failure:
+1) comparisonAndCoupleSideSurviveRecreationAndCanBeReplaced(vn.edu.midterm.cinemamap.CinemaPreviewUpgradeTest)
+java.lang.AssertionError: expected:<SeatCameraState(seatId=F09, yaw=0.0, pitch=0.0, side=LEFT)> but was:<SeatCameraState(seatId=L04, yaw=0.0, pitch=0.0, side=RIGHT)>
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.failNotEquals(Assert.java:835)
+	at org.junit.Assert.assertEquals(Assert.java:120)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at vn.edu.midterm.cinemamap.CinemaPreviewUpgradeTest.assertCamera$lambda$14(CinemaPreviewUpgradeTest.kt:190)
+	at vn.edu.midterm.cinemamap.CinemaPreviewUpgradeTest$$ExternalSyntheticLambda1.perform(D8$$SyntheticClass:0)
+	at androidx.test.core.app.ActivityScenario.lambda$onActivity$2$androidx-test-core-app-ActivityScenario(ActivityScenario.java:794)
+	at androidx.test.core.app.ActivityScenario$$ExternalSyntheticLambda2.run(D8$$SyntheticClass:0)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:520)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at android.app.Instrumentation$SyncRunnable.run(Instrumentation.java:2657)
+	at android.os.Handler.handleCallback(Handler.java:1095)
+	at android.os.Handler.dispatchMessageImpl(Handler.java:135)
+	at android.os.Handler.dispatchMessage(Handler.java:125)
+	at android.os.Looper.loopOnce(Looper.java:296)
+	at android.os.Looper.loop(Looper.java:397)
+	at android.app.ActivityThread.main(ActivityThread.java:9523)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:575)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:939)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1

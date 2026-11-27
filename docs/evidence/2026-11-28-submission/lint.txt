@@ -1,0 +1,15 @@
+Lint Debug: 0 errors, 14 Warning issues in XML report (primary issue count).
+InconsistentLayout {'file': '/Users/ngovietthanhbinh/Project/Midterm-Mobile/CinemaMap/app/src/main/res/layout/activity_cinema_preview.xml', 'line': '79', 'column': '9', 'message': 'Occurrence in layout'}
+InconsistentLayout {'file': '/Users/ngovietthanhbinh/Project/Midterm-Mobile/CinemaMap/app/src/main/res/layout-land/activity_cinema_preview.xml', 'line': '86', 'column': '9', 'message': 'Occurrence in layout-land'}
+AndroidGradlePluginVersion {'file': '/Users/ngovietthanhbinh/Project/Midterm-Mobile/CinemaMap/gradle/wrapper/gradle-wrapper.properties', 'line': '5', 'column': '17'}
+GradleDependency {'file': '/Users/ngovietthanhbinh/Project/Midterm-Mobile/CinemaMap/app/build.gradle.kts', 'line': '40', 'column': '20'}
+Overdraw {'file': '/Users/ngovietthanhbinh/Project/Midterm-Mobile/CinemaMap/app/src/main/res/layout/view_booking_sheet.xml', 'line': '8', 'column': '13'}
+Overdraw {'file': '/Users/ngovietthanhbinh/Project/Midterm-Mobile/CinemaMap/app/src/main/res/layout/view_seat_legend.xml', 'line': '6', 'column': '5'}
+UnusedResources {'file': '/Users/ngovietthanhbinh/Project/Midterm-Mobile/CinemaMap/app/src/main/res/values/colors.xml', 'line': '3', 'column': '12'}
+UseKtx {'file': '/Users/ngovietthanhbinh/Project/Midterm-Mobile/CinemaMap/app/src/main/java/vn/edu/midterm/cinemamap/map/CinemaMapView.kt', 'line': '360', 'column': '26'}
+UseKtx {'file': '/Users/ngovietthanhbinh/Project/Midterm-Mobile/CinemaMap/app/src/main/java/vn/edu/midterm/cinemamap/map/CinemaMapView.kt', 'line': '477', 'column': '21'}
+UseKtx {'file': '/Users/ngovietthanhbinh/Project/Midterm-Mobile/CinemaMap/app/src/main/java/vn/edu/midterm/cinemamap/preview/CinemaMiniMapView.kt', 'line': '63', 'column': '21'}
+UseKtx {'file': '/Users/ngovietthanhbinh/Project/Midterm-Mobile/CinemaMap/app/src/main/java/vn/edu/midterm/cinemamap/preview/CinemaRoomSettings.kt', 'line': '41', 'column': '22'}
+UseKtx {'file': '/Users/ngovietthanhbinh/Project/Midterm-Mobile/CinemaMap/app/src/main/java/vn/edu/midterm/cinemamap/preview/CinemaTrailerPlayer.kt', 'line': '68', 'column': '41'}
+UseTomlInstead {'file': '/Users/ngovietthanhbinh/Project/Midterm-Mobile/CinemaMap/app/build.gradle.kts', 'line': '40', 'column': '20'}
+ClickableViewAccessibility {'file': '/Users/ngovietthanhbinh/Project/Midterm-Mobile/CinemaMap/app/src/main/java/vn/edu/midterm/cinemamap/map/CinemaMapView.kt', 'line': '174', 'column': '18'}

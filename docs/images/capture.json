@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-28",
+  "device": "emulator-5554 / sdk_gphone16k_arm64 / API 37",
+  "method": "ADB screencap; unaltered application content; lossless PNG",
+  "main": {
+    "file": "seat-map.png",
+    "selected_ids": [
+      "A05",
+      "E08",
+      "K03"
+    ],
+    "seat_objects": 3,
+    "capacity": 4,
+    "price_vnd": 385000
+  },
+  "preview": {
+    "file": "seat-view-3d.png",
+    "seat": "K03",
+    "side": "LEFT"
+  }
+}

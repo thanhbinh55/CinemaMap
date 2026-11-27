@@ -9,3 +9,6 @@ local.properties
 .idea/
 .gradle/
 .kotlin/
+
+/demo-video/
+/XRecorder_*.mp4

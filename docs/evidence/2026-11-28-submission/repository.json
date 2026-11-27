@@ -1,0 +1,19 @@
+{
+  "checked_date": "2026-11-28",
+  "method": "Unauthenticated GET https://api.github.com/repos/thanhbinh55/CinemaMap",
+  "http_status": 200,
+  "full_name": "thanhbinh55/CinemaMap",
+  "private": false,
+  "visibility": "public",
+  "default_branch": "main",
+  "history_before_this_update": {
+    "commits": 12,
+    "dates": [
+      "2026-11-23",
+      "2026-11-24",
+      "2026-11-27",
+      "2026-11-28"
+    ]
+  },
+  "app_source_revision": "f3e32f91348b21418246b3bdb857787f3988ef7c"
+}
